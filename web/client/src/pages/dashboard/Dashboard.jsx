@@ -8,6 +8,7 @@ import {
 } from 'lucide-react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { Link, useNavigate } from 'react-router-dom';
+import toast from 'react-hot-toast';
 import { useTheme } from '../../context/ThemeContext';
 import GlassCard from '../../components/common/GlassCard';
 import NeonButton from '../../components/common/NeonButton';
@@ -71,10 +72,10 @@ const HeroCreditCard = ({ card, onPrev, onNext, hasMultiple }) => {
                     <div className={`relative w-[420px] h-[260px] rounded-3xl overflow-hidden shadow-2xl`}>
                         {/* Card Background */}
                         <div className={`absolute inset-0 ${isFrozen
-                                ? 'bg-gradient-to-br from-slate-500 via-gray-600 to-slate-700'
-                                : isBusinessCard
-                                    ? 'bg-gradient-to-br from-amber-500 via-orange-500 to-red-500'
-                                    : 'bg-gradient-to-br from-cyan-400 via-blue-500 to-purple-600'
+                            ? 'bg-gradient-to-br from-slate-500 via-gray-600 to-slate-700'
+                            : isBusinessCard
+                                ? 'bg-gradient-to-br from-amber-500 via-orange-500 to-red-500'
+                                : 'bg-gradient-to-br from-cyan-400 via-blue-500 to-purple-600'
                             }`} />
 
                         {/* Animated shimmer */}
@@ -249,15 +250,18 @@ const AddMoneyModal = ({ isOpen, onClose, selectedCard }) => {
             if (res.success) {
                 queryClient.invalidateQueries(['accounts']);
                 queryClient.invalidateQueries(['transactions']);
+                toast.success(`${parseFloat(amount).toLocaleString()} EGP added successfully! 💰`);
                 onClose();
                 setStep(1);
                 setAmount('');
                 setOtp('');
             } else {
                 setError(res.message);
+                toast.error(res.message || 'Deposit failed');
             }
         } catch (err) {
             setError(err.message);
+            toast.error(err.message || 'Deposit failed');
         }
         setLoading(false);
     };
@@ -298,8 +302,8 @@ const AddMoneyModal = ({ isOpen, onClose, selectedCard }) => {
                                     key={val}
                                     onClick={() => setAmount(val.toString())}
                                     className={`py-2 rounded-xl border text-sm transition-all ${amount === val.toString()
-                                            ? 'bg-accent-cyan/20 border-accent-cyan'
-                                            : 'bg-glass-bg border-glass-border hover:bg-glass-hover'
+                                        ? 'bg-accent-cyan/20 border-accent-cyan'
+                                        : 'bg-glass-bg border-glass-border hover:bg-glass-hover'
                                         }`}
                                 >
                                     {val.toLocaleString()}
@@ -449,8 +453,8 @@ export default function Dashboard() {
                                         key={i}
                                         onClick={() => setSelectedCardIndex(i)}
                                         className={`transition-all ${i === selectedCardIndex
-                                                ? 'w-8 h-2 bg-accent-cyan rounded-full'
-                                                : 'w-2 h-2 bg-glass-border rounded-full hover:bg-glass-hover'
+                                            ? 'w-8 h-2 bg-accent-cyan rounded-full'
+                                            : 'w-2 h-2 bg-glass-border rounded-full hover:bg-glass-hover'
                                             }`}
                                     />
                                 ))}

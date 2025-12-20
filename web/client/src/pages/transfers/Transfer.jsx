@@ -6,6 +6,7 @@ import {
 } from 'lucide-react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { Link } from 'react-router-dom';
+import toast from 'react-hot-toast';
 import GlassCard from '../../components/common/GlassCard';
 import GlowInput from '../../components/common/GlowInput';
 import NeonButton from '../../components/common/NeonButton';
@@ -28,10 +29,10 @@ const CardSelector = ({ cards, selectedCard, onSelect }) => {
                 className="w-full flex items-center gap-4 p-4 bg-gradient-to-r from-glass-bg to-transparent border border-glass-border rounded-2xl hover:border-accent-cyan/50 transition-all"
             >
                 <div className={`w-14 h-9 rounded-lg ${selected?.cardSettings?.isFrozen
-                        ? 'bg-gradient-to-br from-blue-500 to-blue-700'
-                        : selected?.type === 'Savings'
-                            ? 'bg-gradient-to-br from-accent-purple to-accent-cyan'
-                            : 'bg-gradient-to-br from-amber-500 to-orange-600'
+                    ? 'bg-gradient-to-br from-blue-500 to-blue-700'
+                    : selected?.type === 'Savings'
+                        ? 'bg-gradient-to-br from-accent-purple to-accent-cyan'
+                        : 'bg-gradient-to-br from-amber-500 to-orange-600'
                     } shadow-lg flex items-center justify-center`}>
                     <CreditCard className="w-5 h-5 text-white/80" />
                 </div>
@@ -66,10 +67,10 @@ const CardSelector = ({ cards, selectedCard, onSelect }) => {
                                 className={`w-full flex items-center gap-4 p-4 hover:bg-glass-hover transition-colors ${selectedCard === card.number ? 'bg-accent-cyan/10' : ''}`}
                             >
                                 <div className={`w-14 h-9 rounded-lg ${card.cardSettings?.isFrozen
-                                        ? 'bg-gradient-to-br from-blue-500 to-blue-700'
-                                        : card.type === 'Savings'
-                                            ? 'bg-gradient-to-br from-accent-purple to-accent-cyan'
-                                            : 'bg-gradient-to-br from-amber-500 to-orange-600'
+                                    ? 'bg-gradient-to-br from-blue-500 to-blue-700'
+                                    : card.type === 'Savings'
+                                        ? 'bg-gradient-to-br from-accent-purple to-accent-cyan'
+                                        : 'bg-gradient-to-br from-amber-500 to-orange-600'
                                     } shadow-lg flex items-center justify-center`}>
                                     <CreditCard className="w-5 h-5 text-white/80" />
                                 </div>
@@ -103,8 +104,8 @@ const QuickAmount = ({ value, selected, onClick }) => (
         whileTap={{ scale: 0.95 }}
         onClick={onClick}
         className={`flex-1 py-3 rounded-xl border text-sm font-medium transition-all ${selected
-                ? 'bg-gradient-to-r from-accent-cyan to-accent-purple border-transparent text-void shadow-lg shadow-accent-purple/30'
-                : 'bg-glass-bg border-glass-border hover:bg-glass-hover'
+            ? 'bg-gradient-to-r from-accent-cyan to-accent-purple border-transparent text-void shadow-lg shadow-accent-purple/30'
+            : 'bg-glass-bg border-glass-border hover:bg-glass-hover'
             }`}
     >
         {value.toLocaleString()}
@@ -264,11 +265,14 @@ export default function Transfer() {
                 setSuccess(res);
                 queryClient.invalidateQueries(['accounts']);
                 queryClient.invalidateQueries(['transactions']);
+                toast.success('Transfer completed successfully! 🎉');
             } else {
                 setError(res.message || 'Transfer failed');
+                toast.error(res.message || 'Transfer failed');
             }
         } catch (err) {
             setError(err.message || 'Transfer failed');
+            toast.error(err.message || 'Transfer failed');
         }
         setLoading(false);
     };
@@ -357,8 +361,8 @@ export default function Transfer() {
                         >
                             <motion.div
                                 className={`w-12 h-12 rounded-2xl flex items-center justify-center font-bold transition-all ${step >= s.num
-                                        ? 'bg-gradient-to-br from-accent-cyan to-accent-purple text-white shadow-lg shadow-accent-purple/30'
-                                        : 'bg-glass-bg border border-glass-border text-text-muted'
+                                    ? 'bg-gradient-to-br from-accent-cyan to-accent-purple text-white shadow-lg shadow-accent-purple/30'
+                                    : 'bg-glass-bg border border-glass-border text-text-muted'
                                     }`}
                             >
                                 {step > s.num ? <CheckCircle2 className="w-5 h-5" /> : <s.icon className="w-5 h-5" />}
@@ -430,8 +434,8 @@ export default function Transfer() {
                                                 whileTap={{ scale: 0.98 }}
                                                 onClick={() => setFormData({ ...formData, recipient: b.accountNumber })}
                                                 className={`px-4 py-2 rounded-xl border flex items-center gap-2 transition-all ${formData.recipient === b.accountNumber
-                                                        ? 'bg-accent-cyan/20 border-accent-cyan'
-                                                        : 'bg-glass-bg border-glass-border hover:border-accent-cyan/50'
+                                                    ? 'bg-accent-cyan/20 border-accent-cyan'
+                                                    : 'bg-glass-bg border-glass-border hover:border-accent-cyan/50'
                                                     }`}
                                             >
                                                 <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-accent-purple to-accent-cyan flex items-center justify-center text-xs font-bold">
