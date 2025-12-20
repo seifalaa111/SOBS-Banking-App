@@ -26,9 +26,9 @@ const DB = {
 const SEED_USER_ID = "USR001";
 DB.users.push({
     id: SEED_USER_ID,
-    email: "ahmed@example.com",
+    email: "seif@example.com",
     password: "SecurePass123!",
-    name: "Ahmed Mohamed",
+    name: "Seif Alaa",
     phone: "+201001234567"
 });
 

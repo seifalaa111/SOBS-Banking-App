@@ -142,10 +142,10 @@ const HeroCreditCard = ({ card, onPrev, onNext, hasMultiple }) => {
                             </div>
                         </div>
 
-                        {/* Eye toggle */}
+                        {/* Eye toggle - aligned under VISA */}
                         <button
                             onClick={() => setShowBalance(!showBalance)}
-                            className="absolute top-6 right-20 p-2 rounded-full bg-white/10 hover:bg-white/20 transition-colors z-30"
+                            className="absolute top-[70px] right-8 p-2 rounded-full bg-white/10 hover:bg-white/20 transition-colors z-30"
                         >
                             {showBalance ? <Eye className="w-5 h-5 text-white" /> : <EyeOff className="w-5 h-5 text-white" />}
                         </button>
