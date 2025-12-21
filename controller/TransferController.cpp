@@ -10,6 +10,8 @@
 #include <sstream>
 #include <iomanip>
 
+using namespace std;
+
 namespace SOBS {
 namespace Controller {
 
@@ -17,11 +19,11 @@ TransferController::TransferController() {}
 
 TransferController::~TransferController() {}
 
-std::string TransferController::getCurrentUserId() {
+string TransferController::getCurrentUserId() {
     return "USR001";
 }
 
-std::string TransferController::initiateTransfer(const std::string& userId,
+string TransferController::initiateTransfer(const string& userId,
                                                   const TransferRequest& request) {
     if (userId.empty()) {
         return View::JsonResponseBuilder::buildErrorResponse(
@@ -75,8 +77,8 @@ std::string TransferController::initiateTransfer(const std::string& userId,
     
     bool requiresOTP = (request.amount > 5000.0);
     
-    std::stringstream dataJson;
-    dataJson << std::fixed << std::setprecision(2);
+    stringstream dataJson;
+    dataJson << fixed << setprecision(2);
     dataJson << "{\n"
              << "    \"transferId\": \"" << transfer.getTransferRef() << "\",\n"
              << "    \"status\": \"" << (requiresOTP ? "PENDING_OTP" : "PENDING") << "\",\n"
@@ -86,16 +88,16 @@ std::string TransferController::initiateTransfer(const std::string& userId,
              << "    \"recipientName\": \"Mohamed Ali\"\n"  // From validation
              << "  }";
     
-    std::string message = requiresOTP ? 
+    string message = requiresOTP ? 
         "Transfer initiated. OTP sent to your registered mobile" :
         "Transfer initiated successfully";
     
     return View::JsonResponseBuilder::buildSuccessResponse(dataJson.str(), message);
 }
 
-std::string TransferController::verifyTransfer(const std::string& userId,
-                                               const std::string& transferId,
-                                               const std::string& otp) {
+string TransferController::verifyTransfer(const string& userId,
+                                               const string& transferId,
+                                               const string& otp) {
     if (userId.empty()) {
         return View::JsonResponseBuilder::buildErrorResponse(
             "User not authenticated",
@@ -135,8 +137,8 @@ std::string TransferController::verifyTransfer(const std::string& userId,
     );
 }
 
-std::string TransferController::getTransfer(const std::string& userId,
-                                            const std::string& transferId) {
+string TransferController::getTransfer(const string& userId,
+                                            const string& transferId) {
     if (userId.empty()) {
         return View::JsonResponseBuilder::buildErrorResponse(
             "User not authenticated",
@@ -144,8 +146,8 @@ std::string TransferController::getTransfer(const std::string& userId,
         );
     }
     
-    std::stringstream dataJson;
-    dataJson << std::fixed << std::setprecision(2);
+    stringstream dataJson;
+    dataJson << fixed << setprecision(2);
     dataJson << "{\n"
              << "    \"transferId\": \"" << transferId << "\",\n"
              << "    \"senderAccount\": \"12345678901234\",\n"
@@ -165,8 +167,8 @@ std::string TransferController::getTransfer(const std::string& userId,
     );
 }
 
-std::string TransferController::cancelTransfer(const std::string& userId,
-                                                const std::string& transferId) {
+string TransferController::cancelTransfer(const string& userId,
+                                                const string& transferId) {
     if (userId.empty()) {
         return View::JsonResponseBuilder::buildErrorResponse(
             "User not authenticated",
@@ -179,7 +181,7 @@ std::string TransferController::cancelTransfer(const std::string& userId,
     // 2. Check if cancellable (only PENDING status)
     // 3. Update status to CANCELLED
     
-    std::stringstream dataJson;
+    stringstream dataJson;
     dataJson << "{\n"
              << "    \"transferId\": \"" << transferId << "\",\n"
              << "    \"status\": \"CANCELLED\"\n"
@@ -191,7 +193,7 @@ std::string TransferController::cancelTransfer(const std::string& userId,
     );
 }
 
-std::string TransferController::getBeneficiaries(const std::string& userId) {
+string TransferController::getBeneficiaries(const string& userId) {
     if (userId.empty()) {
         return View::JsonResponseBuilder::buildErrorResponse(
             "User not authenticated",
@@ -199,7 +201,7 @@ std::string TransferController::getBeneficiaries(const std::string& userId) {
         );
     }
     
-    std::stringstream dataJson;
+    stringstream dataJson;
     dataJson << "[\n"
              << "    {\n"
              << "      \"beneficiaryId\": \"BEN001\",\n"
@@ -223,10 +225,10 @@ std::string TransferController::getBeneficiaries(const std::string& userId) {
     );
 }
 
-std::string TransferController::saveBeneficiary(const std::string& userId,
-                                                 const std::string& accountNumber,
-                                                 const std::string& name,
-                                                 const std::string& bank) {
+string TransferController::saveBeneficiary(const string& userId,
+                                                 const string& accountNumber,
+                                                 const string& name,
+                                                 const string& bank) {
     if (userId.empty()) {
         return View::JsonResponseBuilder::buildErrorResponse(
             "User not authenticated",
@@ -241,7 +243,7 @@ std::string TransferController::saveBeneficiary(const std::string& userId,
         );
     }
     
-    std::stringstream dataJson;
+    stringstream dataJson;
     dataJson << "{\n"
              << "    \"beneficiaryId\": \"BEN003\",\n"
              << "    \"accountNumber\": \"" << accountNumber << "\",\n"
@@ -255,8 +257,8 @@ std::string TransferController::saveBeneficiary(const std::string& userId,
     );
 }
 
-std::string TransferController::deleteBeneficiary(const std::string& userId,
-                                                   const std::string& beneficiaryId) {
+string TransferController::deleteBeneficiary(const string& userId,
+                                                   const string& beneficiaryId) {
     if (userId.empty()) {
         return View::JsonResponseBuilder::buildErrorResponse(
             "User not authenticated",

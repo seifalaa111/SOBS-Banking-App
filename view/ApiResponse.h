@@ -14,6 +14,8 @@
 #include <sstream>
 #include <iomanip>
 
+using namespace std;
+
 namespace SOBS {
 namespace View {
 
@@ -21,17 +23,17 @@ template<typename T>
 class ApiResponse {
 private:
     bool success;
-    std::string message;
+    string message;
     T data;
-    std::string timestamp;
-    std::string errorCode;
+    string timestamp;
+    string errorCode;
 
-    std::string getCurrentTimestamp() const {
+    string getCurrentTimestamp() const {
         time_t now = time(nullptr);
         char buffer[80];
         struct tm* timeinfo = localtime(&now);
         strftime(buffer, 80, "%Y-%m-%dT%H:%M:%S", timeinfo);
-        return std::string(buffer);
+        return string(buffer);
     }
 
 public:
@@ -40,22 +42,22 @@ public:
         timestamp = getCurrentTimestamp();
     }
     
-    ApiResponse(bool success, const std::string& message)
+    ApiResponse(bool success, const string& message)
         : success(success), message(message) {
         timestamp = getCurrentTimestamp();
     }
     
-    ApiResponse(bool success, const std::string& message, const T& data)
+    ApiResponse(bool success, const string& message, const T& data)
         : success(success), message(message), data(data) {
         timestamp = getCurrentTimestamp();
     }
 
     // Static factory methods
-    static ApiResponse<T> Success(const T& data, const std::string& message = "Operation successful") {
+    static ApiResponse<T> Success(const T& data, const string& message = "Operation successful") {
         return ApiResponse<T>(true, message, data);
     }
     
-    static ApiResponse<T> Error(const std::string& message, const std::string& errorCode = "") {
+    static ApiResponse<T> Error(const string& message, const string& errorCode = "") {
         ApiResponse<T> response(false, message);
         response.setErrorCode(errorCode);
         return response;
@@ -63,20 +65,20 @@ public:
 
     // Getters
     bool isSuccess() const { return success; }
-    std::string getMessage() const { return message; }
+    string getMessage() const { return message; }
     T getData() const { return data; }
-    std::string getTimestamp() const { return timestamp; }
-    std::string getErrorCode() const { return errorCode; }
+    string getTimestamp() const { return timestamp; }
+    string getErrorCode() const { return errorCode; }
 
     // Setters
     void setSuccess(bool s) { success = s; }
-    void setMessage(const std::string& msg) { message = msg; }
+    void setMessage(const string& msg) { message = msg; }
     void setData(const T& d) { data = d; }
-    void setErrorCode(const std::string& code) { errorCode = code; }
+    void setErrorCode(const string& code) { errorCode = code; }
 
     // JSON serialization (simplified)
-    std::string toJson() const {
-        std::stringstream ss;
+    string toJson() const {
+        stringstream ss;
         ss << "{\n"
            << "  \"success\": " << (success ? "true" : "false") << ",\n"
            << "  \"message\": \"" << message << "\",\n"
@@ -94,13 +96,13 @@ public:
 // Specialized response types for common use cases
 
 struct LoginResponseData {
-    std::string sessionToken;
-    std::string customerId;
-    std::string fullName;
-    std::string email;
+    string sessionToken;
+    string customerId;
+    string fullName;
+    string email;
     
-    std::string toJson() const {
-        std::stringstream ss;
+    string toJson() const {
+        stringstream ss;
         ss << "{\n"
            << "    \"sessionToken\": \"" << sessionToken << "\",\n"
            << "    \"customerId\": \"" << customerId << "\",\n"
@@ -112,14 +114,14 @@ struct LoginResponseData {
 };
 
 struct BalanceResponseData {
-    std::string accountNumber;
+    string accountNumber;
     double balance;
     double availableBalance;
-    std::string currency;
+    string currency;
     
-    std::string toJson() const {
-        std::stringstream ss;
-        ss << std::fixed << std::setprecision(2);
+    string toJson() const {
+        stringstream ss;
+        ss << fixed << setprecision(2);
         ss << "{\n"
            << "    \"accountNumber\": \"" << accountNumber << "\",\n"
            << "    \"balance\": " << balance << ",\n"
@@ -131,15 +133,15 @@ struct BalanceResponseData {
 };
 
 struct TransferResponseData {
-    std::string transferRef;
+    string transferRef;
     double amount;
-    std::string recipientName;
-    std::string status;
-    std::string completedAt;
+    string recipientName;
+    string status;
+    string completedAt;
     
-    std::string toJson() const {
-        std::stringstream ss;
-        ss << std::fixed << std::setprecision(2);
+    string toJson() const {
+        stringstream ss;
+        ss << fixed << setprecision(2);
         ss << "{\n"
            << "    \"transferRef\": \"" << transferRef << "\",\n"
            << "    \"amount\": " << amount << ",\n"
@@ -152,15 +154,15 @@ struct TransferResponseData {
 };
 
 struct BillPaymentResponseData {
-    std::string billRef;
-    std::string billType;
-    std::string provider;
+    string billRef;
+    string billType;
+    string provider;
     double amount;
-    std::string status;
+    string status;
     
-    std::string toJson() const {
-        std::stringstream ss;
-        ss << std::fixed << std::setprecision(2);
+    string toJson() const {
+        stringstream ss;
+        ss << fixed << setprecision(2);
         ss << "{\n"
            << "    \"billRef\": \"" << billRef << "\",\n"
            << "    \"billType\": \"" << billType << "\",\n"
@@ -175,9 +177,9 @@ struct BillPaymentResponseData {
 // Helper class for formatted JSON responses
 class JsonResponseBuilder {
 public:
-    static std::string buildSuccessResponse(const std::string& data, 
-                                            const std::string& message = "Operation successful") {
-        std::stringstream ss;
+    static string buildSuccessResponse(const string& data, 
+                                            const string& message = "Operation successful") {
+        stringstream ss;
         time_t now = time(nullptr);
         char buffer[80];
         struct tm* timeinfo = localtime(&now);
@@ -192,9 +194,9 @@ public:
         return ss.str();
     }
     
-    static std::string buildErrorResponse(const std::string& message,
-                                          const std::string& errorCode = "") {
-        std::stringstream ss;
+    static string buildErrorResponse(const string& message,
+                                          const string& errorCode = "") {
+        stringstream ss;
         time_t now = time(nullptr);
         char buffer[80];
         struct tm* timeinfo = localtime(&now);

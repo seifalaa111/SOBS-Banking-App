@@ -10,6 +10,8 @@
 #include <sstream>
 #include <iomanip>
 
+using namespace std;
+
 namespace SOBS {
 namespace Controller {
 
@@ -17,23 +19,23 @@ AuthenticationController::AuthenticationController() {}
 
 AuthenticationController::~AuthenticationController() {}
 
-std::string AuthenticationController::generateOTP() {
-    std::random_device rd;
-    std::mt19937 gen(rd());
-    std::uniform_int_distribution<> dis(100000, 999999);
+string AuthenticationController::generateOTP() {
+    random_device rd;
+    mt19937 gen(rd());
+    uniform_int_distribution<> dis(100000, 999999);
     
-    std::stringstream ss;
+    stringstream ss;
     ss << dis(gen);
     return ss.str();
 }
 
-std::string AuthenticationController::generateSessionToken() {
-    std::random_device rd;
-    std::mt19937 gen(rd());
-    std::uniform_int_distribution<> dis(0, 15);
+string AuthenticationController::generateSessionToken() {
+    random_device rd;
+    mt19937 gen(rd());
+    uniform_int_distribution<> dis(0, 15);
     
     const char* hex = "0123456789ABCDEF";
-    std::stringstream ss;
+    stringstream ss;
     ss << "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.";
     for (int i = 0; i < 32; i++) {
         ss << hex[dis(gen)];
@@ -41,14 +43,14 @@ std::string AuthenticationController::generateSessionToken() {
     return ss.str();
 }
 
-bool AuthenticationController::sendOTPviaSMS(const std::string& phoneNumber, 
-                                              const std::string& otp) {
+bool AuthenticationController::sendOTPviaSMS(const string& phoneNumber, 
+                                              const string& otp) {
     // In real implementation, would call SMS gateway API
     // For now, simulate success
     return true;
 }
 
-std::string AuthenticationController::registerUser(const RegistrationRequest& request) {
+string AuthenticationController::registerUser(const RegistrationRequest& request) {
     // Validate National ID
     if (!Model::User::validateNationalId(request.nationalId)) {
         return View::JsonResponseBuilder::buildErrorResponse(
@@ -93,11 +95,11 @@ std::string AuthenticationController::registerUser(const RegistrationRequest& re
     // 5. Send verification OTP
     
     // Generate and send OTP
-    std::string otp = generateOTP();
+    string otp = generateOTP();
     sendOTPviaSMS(request.phoneNumber, otp);
     
     // Build success response
-    std::stringstream dataJson;
+    stringstream dataJson;
     dataJson << "{\n"
              << "    \"customerId\": \"" << user.getCustomerId() << "\",\n"
              << "    \"message\": \"OTP sent to " << request.phoneNumber << "\",\n"
@@ -110,7 +112,7 @@ std::string AuthenticationController::registerUser(const RegistrationRequest& re
     );
 }
 
-std::string AuthenticationController::login(const LoginRequest& request) {
+string AuthenticationController::login(const LoginRequest& request) {
     // Validate input
     if (request.email.empty() || request.password.empty()) {
         return View::JsonResponseBuilder::buildErrorResponse(
@@ -129,11 +131,11 @@ std::string AuthenticationController::login(const LoginRequest& request) {
     // Simulate user lookup
     // For demo, assume credentials are valid
     
-    std::string otp = generateOTP();
-    std::string sessionId = generateSessionToken();
+    string otp = generateOTP();
+    string sessionId = generateSessionToken();
     
     // Build response
-    std::stringstream dataJson;
+    stringstream dataJson;
     dataJson << "{\n"
              << "    \"sessionId\": \"" << sessionId << "\",\n"
              << "    \"requiresOTP\": true,\n"
@@ -146,7 +148,7 @@ std::string AuthenticationController::login(const LoginRequest& request) {
     );
 }
 
-std::string AuthenticationController::verifyOTP(const OTPRequest& request) {
+string AuthenticationController::verifyOTP(const OTPRequest& request) {
     // Validate input
     if (request.sessionId.empty() || request.otp.empty()) {
         return View::JsonResponseBuilder::buildErrorResponse(
@@ -169,7 +171,7 @@ std::string AuthenticationController::verifyOTP(const OTPRequest& request) {
     // 4. Return user data with session token
     
     // Simulate successful verification
-    std::string sessionToken = generateSessionToken();
+    string sessionToken = generateSessionToken();
     
     View::LoginResponseData loginData;
     loginData.sessionToken = sessionToken;
@@ -183,7 +185,7 @@ std::string AuthenticationController::verifyOTP(const OTPRequest& request) {
     );
 }
 
-std::string AuthenticationController::logout(const std::string& sessionToken) {
+string AuthenticationController::logout(const string& sessionToken) {
     if (sessionToken.empty()) {
         return View::JsonResponseBuilder::buildErrorResponse(
             "Invalid session",
@@ -202,7 +204,7 @@ std::string AuthenticationController::logout(const std::string& sessionToken) {
     );
 }
 
-std::string AuthenticationController::forgotPassword(const std::string& email) {
+string AuthenticationController::forgotPassword(const string& email) {
     if (!Model::User::validateEmail(email)) {
         return View::JsonResponseBuilder::buildErrorResponse(
             "Invalid email format",
@@ -215,7 +217,7 @@ std::string AuthenticationController::forgotPassword(const std::string& email) {
     // 2. Generate reset token
     // 3. Send reset link via email
     
-    std::stringstream dataJson;
+    stringstream dataJson;
     dataJson << "{\n"
              << "    \"message\": \"Password reset link sent to " << email << "\"\n"
              << "  }";
@@ -226,8 +228,8 @@ std::string AuthenticationController::forgotPassword(const std::string& email) {
     );
 }
 
-std::string AuthenticationController::resetPassword(const std::string& token, 
-                                                     const std::string& newPassword) {
+string AuthenticationController::resetPassword(const string& token, 
+                                                     const string& newPassword) {
     if (token.empty()) {
         return View::JsonResponseBuilder::buildErrorResponse(
             "Invalid reset token",

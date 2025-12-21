@@ -12,6 +12,8 @@
 #include <string>
 #include <ctime>
 
+using namespace std;
+
 namespace SOBS {
 namespace Model {
 
@@ -32,13 +34,13 @@ enum class UserRole {
 class User {
 private:
     long userId;
-    std::string customerId;      // CUS123456789
-    std::string nationalId;      // Egyptian National ID (14 digits)
-    std::string fullName;
-    std::string email;
-    std::string phoneNumber;     // +20XXXXXXXXXX
-    std::string address;
-    std::string passwordHash;
+    string customerId;      // CUS123456789
+    string nationalId;      // Egyptian National ID (14 digits)
+    string fullName;
+    string email;
+    string phoneNumber;     // +20XXXXXXXXXX
+    string address;
+    string passwordHash;
     UserStatus status;
     UserRole role;
     time_t createdAt;
@@ -48,20 +50,20 @@ private:
 public:
     // Constructor
     User();
-    User(const std::string& nationalId, const std::string& fullName, 
-         const std::string& email, const std::string& phoneNumber);
+    User(const string& nationalId, const string& fullName, 
+         const string& email, const string& phoneNumber);
     
     // Destructor
     ~User();
 
     // Getters
     long getUserId() const;
-    std::string getCustomerId() const;
-    std::string getNationalId() const;
-    std::string getFullName() const;
-    std::string getEmail() const;
-    std::string getPhoneNumber() const;
-    std::string getAddress() const;
+    string getCustomerId() const;
+    string getNationalId() const;
+    string getFullName() const;
+    string getEmail() const;
+    string getPhoneNumber() const;
+    string getAddress() const;
     UserStatus getStatus() const;
     UserRole getRole() const;
     time_t getCreatedAt() const;
@@ -70,19 +72,19 @@ public:
 
     // Setters
     void setUserId(long id);
-    void setCustomerId(const std::string& id);
-    void setNationalId(const std::string& nid);
-    void setFullName(const std::string& name);
-    void setEmail(const std::string& email);
-    void setPhoneNumber(const std::string& phone);
-    void setAddress(const std::string& addr);
-    void setPasswordHash(const std::string& hash);
+    void setCustomerId(const string& id);
+    void setNationalId(const string& nid);
+    void setFullName(const string& name);
+    void setEmail(const string& email);
+    void setPhoneNumber(const string& phone);
+    void setAddress(const string& addr);
+    void setPasswordHash(const string& hash);
     void setStatus(UserStatus status);
     void setRole(UserRole role);
     void setLastLoginAt(time_t time);
 
     // Business Logic Methods
-    bool validatePassword(const std::string& password) const;
+    bool validatePassword(const string& password) const;
     bool isActive() const;
     void incrementFailedAttempts();
     void resetFailedAttempts();
@@ -92,18 +94,18 @@ public:
     bool login();
     void logout();
     bool updateProfile();
-    bool verifyOTP(const std::string& code);
+    bool verifyOTP(const string& code);
     bool resetPassword();
 
     // Static validation methods
-    static bool validateNationalId(const std::string& nid);
-    static bool validateEmail(const std::string& email);
-    static bool validatePhoneNumber(const std::string& phone);
-    static bool validatePasswordStrength(const std::string& password);
+    static bool validateNationalId(const string& nid);
+    static bool validateEmail(const string& email);
+    static bool validatePhoneNumber(const string& phone);
+    static bool validatePasswordStrength(const string& password);
 
     // Utility
-    std::string toString() const;
-    std::string generateCustomerId();
+    string toString() const;
+    string generateCustomerId();
 };
 
 } // namespace Model

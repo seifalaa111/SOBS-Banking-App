@@ -14,35 +14,37 @@
 #include "../model/User.h"
 #include "../view/ApiResponse.h"
 
+using namespace std;
+
 namespace SOBS {
 namespace Controller {
 
 // Request structures
 struct RegistrationRequest {
-    std::string nationalId;
-    std::string fullName;
-    std::string email;
-    std::string phoneNumber;
-    std::string password;
-    std::string bankAccountNumber;
+    string nationalId;
+    string fullName;
+    string email;
+    string phoneNumber;
+    string password;
+    string bankAccountNumber;
 };
 
 struct LoginRequest {
-    std::string email;
-    std::string password;
+    string email;
+    string password;
 };
 
 struct OTPRequest {
-    std::string sessionId;
-    std::string otp;
+    string sessionId;
+    string otp;
 };
 
 class AuthenticationController {
 private:
     // In real implementation, would inject AuthenticationService
-    std::string generateOTP();
-    std::string generateSessionToken();
-    bool sendOTPviaSMS(const std::string& phoneNumber, const std::string& otp);
+    string generateOTP();
+    string generateSessionToken();
+    bool sendOTPviaSMS(const string& phoneNumber, const string& otp);
 
 public:
     AuthenticationController();
@@ -52,37 +54,37 @@ public:
      * POST /api/v1/auth/register
      * Register a new user
      */
-    std::string registerUser(const RegistrationRequest& request);
+    string registerUser(const RegistrationRequest& request);
 
     /**
      * POST /api/v1/auth/login
      * Authenticate user credentials
      */
-    std::string login(const LoginRequest& request);
+    string login(const LoginRequest& request);
 
     /**
      * POST /api/v1/auth/verify-otp
      * Verify OTP and complete authentication
      */
-    std::string verifyOTP(const OTPRequest& request);
+    string verifyOTP(const OTPRequest& request);
 
     /**
      * POST /api/v1/auth/logout
      * Logout current user session
      */
-    std::string logout(const std::string& sessionToken);
+    string logout(const string& sessionToken);
 
     /**
      * POST /api/v1/auth/forgot-password
      * Initiate password reset
      */
-    std::string forgotPassword(const std::string& email);
+    string forgotPassword(const string& email);
 
     /**
      * POST /api/v1/auth/reset-password
      * Complete password reset with token
      */
-    std::string resetPassword(const std::string& token, const std::string& newPassword);
+    string resetPassword(const string& token, const string& newPassword);
 };
 
 } // namespace Controller

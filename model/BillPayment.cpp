@@ -10,6 +10,8 @@
 #include <iomanip>
 #include <random>
 
+using namespace std;
+
 namespace SOBS {
 namespace Model {
 
@@ -23,8 +25,8 @@ BillPayment::BillPayment()
 }
 
 // Parameterized Constructor
-BillPayment::BillPayment(long accountId, BillType type, const std::string& provider,
-                         const std::string& billAccount, double amount)
+BillPayment::BillPayment(long accountId, BillType type, const string& provider,
+                         const string& billAccount, double amount)
     : billId(0), accountId(accountId), billType(type),
       serviceProvider(provider), billAccountNumber(billAccount),
       amount(amount), status(PaymentStatus::PENDING),
@@ -38,11 +40,11 @@ BillPayment::~BillPayment() {}
 
 // Getters
 long BillPayment::getBillId() const { return billId; }
-std::string BillPayment::getBillRef() const { return billRef; }
+string BillPayment::getBillRef() const { return billRef; }
 long BillPayment::getAccountId() const { return accountId; }
 BillType BillPayment::getBillType() const { return billType; }
-std::string BillPayment::getServiceProvider() const { return serviceProvider; }
-std::string BillPayment::getBillAccountNumber() const { return billAccountNumber; }
+string BillPayment::getServiceProvider() const { return serviceProvider; }
+string BillPayment::getBillAccountNumber() const { return billAccountNumber; }
 double BillPayment::getAmount() const { return amount; }
 PaymentStatus BillPayment::getStatus() const { return status; }
 time_t BillPayment::getPaymentDate() const { return paymentDate; }
@@ -54,8 +56,8 @@ bool BillPayment::getIsRecurring() const { return isRecurring; }
 void BillPayment::setBillId(long id) { billId = id; }
 void BillPayment::setAccountId(long id) { accountId = id; }
 void BillPayment::setBillType(BillType type) { billType = type; }
-void BillPayment::setServiceProvider(const std::string& provider) { serviceProvider = provider; }
-void BillPayment::setBillAccountNumber(const std::string& account) { billAccountNumber = account; }
+void BillPayment::setServiceProvider(const string& provider) { serviceProvider = provider; }
+void BillPayment::setBillAccountNumber(const string& account) { billAccountNumber = account; }
 void BillPayment::setAmount(double amt) { amount = amt; }
 void BillPayment::setStatus(PaymentStatus s) { status = s; }
 void BillPayment::setScheduledDate(time_t date) { 
@@ -97,9 +99,9 @@ bool BillPayment::scheduleBillPayment(time_t date) {
     return true;
 }
 
-std::string BillPayment::generateReceipt() const {
-    std::stringstream ss;
-    ss << std::fixed << std::setprecision(2);
+string BillPayment::generateReceipt() const {
+    stringstream ss;
+    ss << fixed << setprecision(2);
     
     char dateBuffer[80];
     struct tm* timeinfo = localtime(&paymentDate);
@@ -125,18 +127,18 @@ std::string BillPayment::generateReceipt() const {
 }
 
 // Static Methods
-std::string BillPayment::generateBillRef() {
-    std::random_device rd;
-    std::mt19937 gen(rd());
-    std::uniform_int_distribution<> dis(100000, 999999);
+string BillPayment::generateBillRef() {
+    random_device rd;
+    mt19937 gen(rd());
+    uniform_int_distribution<> dis(100000, 999999);
     
     time_t now = time(nullptr);
-    std::stringstream ss;
+    stringstream ss;
     ss << "BILL" << now << dis(gen);
     return ss.str();
 }
 
-std::string BillPayment::getBillTypeString(BillType type) {
+string BillPayment::getBillTypeString(BillType type) {
     switch (type) {
         case BillType::ELECTRICITY: return "ELECTRICITY";
         case BillType::WATER: return "WATER";
@@ -149,7 +151,7 @@ std::string BillPayment::getBillTypeString(BillType type) {
     }
 }
 
-std::string BillPayment::getStatusString() const {
+string BillPayment::getStatusString() const {
     switch (status) {
         case PaymentStatus::PENDING: return "PENDING";
         case PaymentStatus::COMPLETED: return "COMPLETED";
@@ -159,9 +161,9 @@ std::string BillPayment::getStatusString() const {
     }
 }
 
-std::string BillPayment::toString() const {
-    std::stringstream ss;
-    ss << std::fixed << std::setprecision(2);
+string BillPayment::toString() const {
+    stringstream ss;
+    ss << fixed << setprecision(2);
     ss << "BillPayment{"
        << "ref='" << billRef << "'"
        << ", type=" << getBillTypeString(billType)

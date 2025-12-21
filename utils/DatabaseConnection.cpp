@@ -12,12 +12,14 @@
 #include <sstream>
 #include <iostream>
 
+using namespace std;
+
 namespace SOBS {
 namespace Utils {
 
 // Initialize static members
 DatabaseConnection* DatabaseConnection::instance = nullptr;
-std::mutex DatabaseConnection::mutex_;
+mutex DatabaseConnection::mutex_;
 
 // Private constructor
 DatabaseConnection::DatabaseConnection()
@@ -40,7 +42,7 @@ DatabaseConnection* DatabaseConnection::getInstance() {
     // First check (without lock) - fast path
     if (instance == nullptr) {
         // Lock before creating instance
-        std::lock_guard<std::mutex> lock(mutex_);
+        lock_guard<mutex> lock(mutex_);
         
         // Second check (with lock) - ensures only one instance
         if (instance == nullptr) {
@@ -50,11 +52,11 @@ DatabaseConnection* DatabaseConnection::getInstance() {
     return instance;
 }
 
-bool DatabaseConnection::connect(const std::string& host, int port,
-                                  const std::string& database,
-                                  const std::string& username,
-                                  const std::string& password) {
-    std::lock_guard<std::mutex> lock(mutex_);
+bool DatabaseConnection::connect(const string& host, int port,
+                                  const string& database,
+                                  const string& username,
+                                  const string& password) {
+    lock_guard<mutex> lock(mutex_);
     
     if (connected) {
         return true;  // Already connected
@@ -66,7 +68,7 @@ bool DatabaseConnection::connect(const std::string& host, int port,
     this->username = username;
     
     // Build connection string
-    std::stringstream ss;
+    stringstream ss;
     ss << "postgresql://" << username << ":****@" 
        << host << ":" << port << "/" << database;
     connectionString = ss.str();
@@ -78,14 +80,14 @@ bool DatabaseConnection::connect(const std::string& host, int port,
     connected = true;
     activeConnections = 1;
     
-    std::cout << "[DB] Connected to database: " << database 
-              << " on " << host << ":" << port << std::endl;
+    cout << "[DB] Connected to database: " << database 
+              << " on " << host << ":" << port << endl;
     
     return true;
 }
 
 void DatabaseConnection::disconnect() {
-    std::lock_guard<std::mutex> lock(mutex_);
+    lock_guard<mutex> lock(mutex_);
     
     if (!connected) {
         return;
@@ -96,38 +98,38 @@ void DatabaseConnection::disconnect() {
     connected = false;
     activeConnections = 0;
     
-    std::cout << "[DB] Disconnected from database" << std::endl;
+    cout << "[DB] Disconnected from database" << endl;
 }
 
 bool DatabaseConnection::isConnected() const {
     return connected;
 }
 
-std::string DatabaseConnection::executeQuery(const std::string& query) {
+string DatabaseConnection::executeQuery(const string& query) {
     if (!connected) {
         return "{\"error\": \"Not connected to database\"}";
     }
     
-    std::lock_guard<std::mutex> lock(mutex_);
+    lock_guard<mutex> lock(mutex_);
     
     // In real implementation, would execute SQL query
     // For demo, return simulated result
     
-    std::cout << "[DB] Executing query: " << query.substr(0, 50) << "..." << std::endl;
+    cout << "[DB] Executing query: " << query.substr(0, 50) << "..." << endl;
     
     return "{\"status\": \"success\", \"rows\": []}";
 }
 
-int DatabaseConnection::executeUpdate(const std::string& sql) {
+int DatabaseConnection::executeUpdate(const string& sql) {
     if (!connected) {
         return -1;
     }
     
-    std::lock_guard<std::mutex> lock(mutex_);
+    lock_guard<mutex> lock(mutex_);
     
     // In real implementation, would execute SQL update
     
-    std::cout << "[DB] Executing update: " << sql.substr(0, 50) << "..." << std::endl;
+    cout << "[DB] Executing update: " << sql.substr(0, 50) << "..." << endl;
     
     return 1;  // Number of affected rows
 }
@@ -137,9 +139,9 @@ bool DatabaseConnection::beginTransaction() {
         return false;
     }
     
-    std::lock_guard<std::mutex> lock(mutex_);
+    lock_guard<mutex> lock(mutex_);
     
-    std::cout << "[DB] Transaction started" << std::endl;
+    cout << "[DB] Transaction started" << endl;
     return true;
 }
 
@@ -148,9 +150,9 @@ bool DatabaseConnection::commitTransaction() {
         return false;
     }
     
-    std::lock_guard<std::mutex> lock(mutex_);
+    lock_guard<mutex> lock(mutex_);
     
-    std::cout << "[DB] Transaction committed" << std::endl;
+    cout << "[DB] Transaction committed" << endl;
     return true;
 }
 
@@ -159,14 +161,14 @@ bool DatabaseConnection::rollbackTransaction() {
         return false;
     }
     
-    std::lock_guard<std::mutex> lock(mutex_);
+    lock_guard<mutex> lock(mutex_);
     
-    std::cout << "[DB] Transaction rolled back" << std::endl;
+    cout << "[DB] Transaction rolled back" << endl;
     return true;
 }
 
-std::string DatabaseConnection::getConnectionInfo() const {
-    std::stringstream ss;
+string DatabaseConnection::getConnectionInfo() const {
+    stringstream ss;
     ss << "Database Connection Info:\n"
        << "  Host: " << host << "\n"
        << "  Port: " << port << "\n"

@@ -10,6 +10,8 @@
 #include <iomanip>
 #include <random>
 
+using namespace std;
+
 namespace SOBS {
 namespace Model {
 
@@ -24,8 +26,8 @@ Transfer::Transfer()
 }
 
 // Parameterized Constructor
-Transfer::Transfer(long senderAccountId, const std::string& recipientAccount,
-                   double amount, const std::string& description)
+Transfer::Transfer(long senderAccountId, const string& recipientAccount,
+                   double amount, const string& description)
     : transferId(0), senderAccountId(senderAccountId),
       recipientAccountNumber(recipientAccount), amount(amount),
       description(description), transferType(TransferType::INTRA_BANK),
@@ -42,14 +44,14 @@ Transfer::~Transfer() {}
 
 // Getters
 long Transfer::getTransferId() const { return transferId; }
-std::string Transfer::getTransferRef() const { return transferRef; }
+string Transfer::getTransferRef() const { return transferRef; }
 long Transfer::getSenderAccountId() const { return senderAccountId; }
-std::string Transfer::getSenderAccountNumber() const { return senderAccountNumber; }
-std::string Transfer::getRecipientAccountNumber() const { return recipientAccountNumber; }
-std::string Transfer::getRecipientName() const { return recipientName; }
-std::string Transfer::getRecipientBank() const { return recipientBank; }
+string Transfer::getSenderAccountNumber() const { return senderAccountNumber; }
+string Transfer::getRecipientAccountNumber() const { return recipientAccountNumber; }
+string Transfer::getRecipientName() const { return recipientName; }
+string Transfer::getRecipientBank() const { return recipientBank; }
 double Transfer::getAmount() const { return amount; }
-std::string Transfer::getDescription() const { return description; }
+string Transfer::getDescription() const { return description; }
 TransferType Transfer::getTransferType() const { return transferType; }
 TransferStatus Transfer::getStatus() const { return status; }
 time_t Transfer::getInitiatedAt() const { return initiatedAt; }
@@ -59,12 +61,12 @@ bool Transfer::getRequiresOTP() const { return requiresOTP; }
 
 // Setters
 void Transfer::setTransferId(long id) { transferId = id; }
-void Transfer::setTransferRef(const std::string& ref) { transferRef = ref; }
+void Transfer::setTransferRef(const string& ref) { transferRef = ref; }
 void Transfer::setSenderAccountId(long id) { senderAccountId = id; }
-void Transfer::setSenderAccountNumber(const std::string& num) { senderAccountNumber = num; }
-void Transfer::setRecipientAccountNumber(const std::string& num) { recipientAccountNumber = num; }
-void Transfer::setRecipientName(const std::string& name) { recipientName = name; }
-void Transfer::setRecipientBank(const std::string& bank) { 
+void Transfer::setSenderAccountNumber(const string& num) { senderAccountNumber = num; }
+void Transfer::setRecipientAccountNumber(const string& num) { recipientAccountNumber = num; }
+void Transfer::setRecipientName(const string& name) { recipientName = name; }
+void Transfer::setRecipientBank(const string& bank) { 
     recipientBank = bank;
     if (!bank.empty()) {
         transferType = TransferType::INTER_BANK;
@@ -74,7 +76,7 @@ void Transfer::setAmount(double amt) {
     amount = amt;
     requiresOTP = (amt > 5000.0);
 }
-void Transfer::setDescription(const std::string& desc) { description = desc; }
+void Transfer::setDescription(const string& desc) { description = desc; }
 void Transfer::setTransferType(TransferType type) { transferType = type; }
 void Transfer::setStatus(TransferStatus s) { status = s; }
 void Transfer::setScheduledDate(time_t date) { scheduledDate = date; }
@@ -135,9 +137,9 @@ bool Transfer::complete() {
     return true;
 }
 
-std::string Transfer::generateReceipt() const {
-    std::stringstream ss;
-    ss << std::fixed << std::setprecision(2);
+string Transfer::generateReceipt() const {
+    stringstream ss;
+    ss << fixed << setprecision(2);
     ss << "=========================================\n"
        << "      SMART ONLINE BANKING SYSTEM\n"
        << "           TRANSFER RECEIPT\n"
@@ -170,13 +172,13 @@ std::string Transfer::generateReceipt() const {
 }
 
 // Static Methods
-std::string Transfer::generateTransferRef() {
-    std::random_device rd;
-    std::mt19937 gen(rd());
-    std::uniform_int_distribution<> dis(100000, 999999);
+string Transfer::generateTransferRef() {
+    random_device rd;
+    mt19937 gen(rd());
+    uniform_int_distribution<> dis(100000, 999999);
     
     time_t now = time(nullptr);
-    std::stringstream ss;
+    stringstream ss;
     ss << "TRF" << now << dis(gen);
     return ss.str();
 }
@@ -185,11 +187,11 @@ bool Transfer::validateAmount(double amount) {
     return amount > 0 && amount <= 200000;  // Max single transfer
 }
 
-std::string Transfer::getTypeString() const {
+string Transfer::getTypeString() const {
     return transferType == TransferType::INTRA_BANK ? "INTRA-BANK" : "INTER-BANK";
 }
 
-std::string Transfer::getStatusString() const {
+string Transfer::getStatusString() const {
     switch (status) {
         case TransferStatus::PENDING: return "PENDING";
         case TransferStatus::PENDING_OTP: return "PENDING OTP";
@@ -201,16 +203,16 @@ std::string Transfer::getStatusString() const {
     }
 }
 
-std::string Transfer::getFormattedDate(time_t t) const {
+string Transfer::getFormattedDate(time_t t) const {
     char buffer[80];
     struct tm* timeinfo = localtime(&t);
     strftime(buffer, 80, "%Y-%m-%d %H:%M:%S", timeinfo);
-    return std::string(buffer);
+    return string(buffer);
 }
 
-std::string Transfer::toString() const {
-    std::stringstream ss;
-    ss << std::fixed << std::setprecision(2);
+string Transfer::toString() const {
+    stringstream ss;
+    ss << fixed << setprecision(2);
     ss << "Transfer{"
        << "ref='" << transferRef << "'"
        << ", amount=" << amount << " EGP"

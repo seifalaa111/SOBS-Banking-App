@@ -13,18 +13,20 @@
 #include "../model/BillPayment.h"
 #include "../view/ApiResponse.h"
 
+using namespace std;
+
 namespace SOBS {
 namespace Controller {
 
 struct BillPaymentRequest {
-    std::string accountNumber;
-    std::string billType;
-    std::string serviceProvider;
-    std::string billAccountNumber;
+    string accountNumber;
+    string billType;
+    string serviceProvider;
+    string billAccountNumber;
     double amount;
     bool saveAsBiller;
     bool makeRecurring;
-    std::string scheduledDate;
+    string scheduledDate;
 };
 
 class BillPaymentController {
@@ -36,39 +38,39 @@ public:
      * GET /api/v1/bills/providers
      * Get bill providers by type
      */
-    std::string getProviders(const std::string& billType);
+    string getProviders(const string& billType);
 
     /**
      * GET /api/v1/bills/amount
      * Get bill amount from provider
      */
-    std::string getBillAmount(const std::string& provider, 
-                              const std::string& billAccountNumber);
+    string getBillAmount(const string& provider, 
+                              const string& billAccountNumber);
 
     /**
      * POST /api/v1/bills/pay
      * Process bill payment
      */
-    std::string payBill(const std::string& userId, 
+    string payBill(const string& userId, 
                         const BillPaymentRequest& request);
 
     /**
      * GET /api/v1/bills/history
      * Get bill payment history
      */
-    std::string getPaymentHistory(const std::string& userId);
+    string getPaymentHistory(const string& userId);
 
     /**
      * GET /api/v1/bills/saved
      * Get saved billers
      */
-    std::string getSavedBillers(const std::string& userId);
+    string getSavedBillers(const string& userId);
 
     /**
      * POST /api/v1/bills/schedule
      * Schedule a bill payment
      */
-    std::string scheduleBillPayment(const std::string& userId,
+    string scheduleBillPayment(const string& userId,
                                      const BillPaymentRequest& request);
 };
 

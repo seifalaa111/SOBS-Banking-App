@@ -12,6 +12,8 @@
 #include <string>
 #include <ctime>
 
+using namespace std;
+
 namespace SOBS {
 namespace Model {
 
@@ -31,12 +33,12 @@ enum class AccountStatus {
 class Account {
 private:
     long accountId;
-    std::string accountNumber;   // 14 digits
+    string accountNumber;   // 14 digits
     long userId;                 // Link to User
     AccountType accountType;
     double balance;
     double availableBalance;
-    std::string currency;        // EGP
+    string currency;        // EGP
     AccountStatus status;
     time_t openedDate;
     double dailyTransferLimit;
@@ -52,12 +54,12 @@ public:
 
     // Getters
     long getAccountId() const;
-    std::string getAccountNumber() const;
+    string getAccountNumber() const;
     long getUserId() const;
     AccountType getAccountType() const;
     double getBalance() const;
     double getAvailableBalance() const;
-    std::string getCurrency() const;
+    string getCurrency() const;
     AccountStatus getStatus() const;
     time_t getOpenedDate() const;
     double getDailyTransferLimit() const;
@@ -65,12 +67,12 @@ public:
 
     // Setters
     void setAccountId(long id);
-    void setAccountNumber(const std::string& number);
+    void setAccountNumber(const string& number);
     void setUserId(long id);
     void setAccountType(AccountType type);
     void setBalance(double bal);
     void setAvailableBalance(double bal);
-    void setCurrency(const std::string& curr);
+    void setCurrency(const string& curr);
     void setStatus(AccountStatus status);
     void setDailyTransferLimit(double limit);
 
@@ -84,13 +86,13 @@ public:
     void resetDailyTransferred();
     
     // Static methods
-    static std::string generateAccountNumber();
-    static bool validateAccountNumber(const std::string& number);
+    static string generateAccountNumber();
+    static bool validateAccountNumber(const string& number);
 
     // Utility
-    std::string toString() const;
-    std::string getAccountTypeString() const;
-    std::string getStatusString() const;
+    string toString() const;
+    string getAccountTypeString() const;
+    string getStatusString() const;
 };
 
 } // namespace Model

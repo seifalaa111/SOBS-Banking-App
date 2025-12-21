@@ -11,6 +11,8 @@
 #include <random>
 #include <ctime>
 
+using namespace std;
+
 namespace SOBS {
 namespace Model {
 
@@ -25,7 +27,7 @@ Transaction::Transaction()
 
 // Parameterized Constructor
 Transaction::Transaction(long accountId, TransactionType type, 
-                         double amount, const std::string& description)
+                         double amount, const string& description)
     : transactionId(0), accountId(accountId), type(type),
       category(TransactionCategory::TRANSFER), amount(amount),
       description(description), status(TransactionStatus::PENDING),
@@ -39,27 +41,27 @@ Transaction::~Transaction() {}
 
 // Getters
 long Transaction::getTransactionId() const { return transactionId; }
-std::string Transaction::getTransactionRef() const { return transactionRef; }
+string Transaction::getTransactionRef() const { return transactionRef; }
 long Transaction::getAccountId() const { return accountId; }
 TransactionType Transaction::getType() const { return type; }
 TransactionCategory Transaction::getCategory() const { return category; }
 double Transaction::getAmount() const { return amount; }
-std::string Transaction::getDescription() const { return description; }
+string Transaction::getDescription() const { return description; }
 TransactionStatus Transaction::getStatus() const { return status; }
 time_t Transaction::getTransactionDate() const { return transactionDate; }
-std::string Transaction::getReferenceNumber() const { return referenceNumber; }
+string Transaction::getReferenceNumber() const { return referenceNumber; }
 double Transaction::getBalanceAfter() const { return balanceAfter; }
 
 // Setters
 void Transaction::setTransactionId(long id) { transactionId = id; }
-void Transaction::setTransactionRef(const std::string& ref) { transactionRef = ref; }
+void Transaction::setTransactionRef(const string& ref) { transactionRef = ref; }
 void Transaction::setAccountId(long id) { accountId = id; }
 void Transaction::setType(TransactionType t) { type = t; }
 void Transaction::setCategory(TransactionCategory cat) { category = cat; }
 void Transaction::setAmount(double amt) { amount = amt; }
-void Transaction::setDescription(const std::string& desc) { description = desc; }
+void Transaction::setDescription(const string& desc) { description = desc; }
 void Transaction::setStatus(TransactionStatus s) { status = s; }
-void Transaction::setReferenceNumber(const std::string& ref) { referenceNumber = ref; }
+void Transaction::setReferenceNumber(const string& ref) { referenceNumber = ref; }
 void Transaction::setBalanceAfter(double bal) { balanceAfter = bal; }
 
 // Business Logic
@@ -74,9 +76,9 @@ bool Transaction::processTransaction() {
     return true;
 }
 
-std::string Transaction::getDetails() const {
-    std::stringstream ss;
-    ss << std::fixed << std::setprecision(2);
+string Transaction::getDetails() const {
+    stringstream ss;
+    ss << fixed << setprecision(2);
     ss << "Transaction Details:\n"
        << "Reference: " << transactionRef << "\n"
        << "Date: " << getFormattedDate() << "\n"
@@ -95,9 +97,9 @@ bool Transaction::cancelTransaction() {
     return true;
 }
 
-std::string Transaction::generateReceipt() const {
-    std::stringstream ss;
-    ss << std::fixed << std::setprecision(2);
+string Transaction::generateReceipt() const {
+    stringstream ss;
+    ss << fixed << setprecision(2);
     ss << "=========================================\n"
        << "      SMART ONLINE BANKING SYSTEM\n"
        << "           TRANSACTION RECEIPT\n"
@@ -118,22 +120,22 @@ std::string Transaction::generateReceipt() const {
 }
 
 // Static Methods
-std::string Transaction::generateTransactionRef() {
-    std::random_device rd;
-    std::mt19937 gen(rd());
-    std::uniform_int_distribution<> dis(100000, 999999);
+string Transaction::generateTransactionRef() {
+    random_device rd;
+    mt19937 gen(rd());
+    uniform_int_distribution<> dis(100000, 999999);
     
     time_t now = time(nullptr);
-    std::stringstream ss;
+    stringstream ss;
     ss << "TXN" << now << dis(gen);
     return ss.str();
 }
 
-std::string Transaction::getTypeString() const {
+string Transaction::getTypeString() const {
     return type == TransactionType::DEBIT ? "DEBIT" : "CREDIT";
 }
 
-std::string Transaction::getCategoryString() const {
+string Transaction::getCategoryString() const {
     switch (category) {
         case TransactionCategory::TRANSFER: return "TRANSFER";
         case TransactionCategory::BILL_PAYMENT: return "BILL_PAYMENT";
@@ -145,7 +147,7 @@ std::string Transaction::getCategoryString() const {
     }
 }
 
-std::string Transaction::getStatusString() const {
+string Transaction::getStatusString() const {
     switch (status) {
         case TransactionStatus::PENDING: return "PENDING";
         case TransactionStatus::COMPLETED: return "COMPLETED";
@@ -156,16 +158,16 @@ std::string Transaction::getStatusString() const {
     }
 }
 
-std::string Transaction::getFormattedDate() const {
+string Transaction::getFormattedDate() const {
     char buffer[80];
     struct tm* timeinfo = localtime(&transactionDate);
     strftime(buffer, 80, "%Y-%m-%d %H:%M:%S", timeinfo);
-    return std::string(buffer);
+    return string(buffer);
 }
 
-std::string Transaction::toString() const {
-    std::stringstream ss;
-    ss << std::fixed << std::setprecision(2);
+string Transaction::toString() const {
+    stringstream ss;
+    ss << fixed << setprecision(2);
     ss << "Transaction{"
        << "ref='" << transactionRef << "'"
        << ", type=" << getTypeString()

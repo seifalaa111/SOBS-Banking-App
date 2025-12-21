@@ -22,6 +22,8 @@
 #include <mutex>
 #include <memory>
 
+using namespace std;
+
 namespace SOBS {
 namespace Utils {
 
@@ -47,15 +49,15 @@ private:
     static DatabaseConnection* instance;
     
     // Mutex for thread safety
-    static std::mutex mutex_;
+    static mutex mutex_;
     
     // Connection state
     bool connected;
-    std::string connectionString;
-    std::string host;
+    string connectionString;
+    string host;
     int port;
-    std::string database;
-    std::string username;
+    string database;
+    string username;
     
     // Connection pool settings
     int maxConnections;
@@ -71,10 +73,10 @@ public:
     /**
      * Initialize database connection
      */
-    bool connect(const std::string& host, int port, 
-                 const std::string& database,
-                 const std::string& username,
-                 const std::string& password);
+    bool connect(const string& host, int port, 
+                 const string& database,
+                 const string& username,
+                 const string& password);
     
     /**
      * Close database connection
@@ -89,12 +91,12 @@ public:
     /**
      * Execute a query
      */
-    std::string executeQuery(const std::string& query);
+    string executeQuery(const string& query);
     
     /**
      * Execute an update/insert/delete
      */
-    int executeUpdate(const std::string& sql);
+    int executeUpdate(const string& sql);
     
     /**
      * Begin a transaction
@@ -114,7 +116,7 @@ public:
     /**
      * Get connection info
      */
-    std::string getConnectionInfo() const;
+    string getConnectionInfo() const;
     
     /**
      * Get active connection count

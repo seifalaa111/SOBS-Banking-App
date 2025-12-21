@@ -9,6 +9,8 @@
 #include <sstream>
 #include <iomanip>
 
+using namespace std;
+
 namespace SOBS {
 namespace Controller {
 
@@ -16,12 +18,12 @@ AccountController::AccountController() {}
 
 AccountController::~AccountController() {}
 
-std::string AccountController::getCurrentUserId() {
+string AccountController::getCurrentUserId() {
     // In real implementation, extract from JWT token
     return "USR001";
 }
 
-std::string AccountController::getAccounts(const std::string& userId) {
+string AccountController::getAccounts(const string& userId) {
     if (userId.empty()) {
         return View::JsonResponseBuilder::buildErrorResponse(
             "User not authenticated",
@@ -31,8 +33,8 @@ std::string AccountController::getAccounts(const std::string& userId) {
     
     // In real implementation, would query database
     // Simulating account data
-    std::stringstream dataJson;
-    dataJson << std::fixed << std::setprecision(2);
+    stringstream dataJson;
+    dataJson << fixed << setprecision(2);
     dataJson << "[\n"
              << "    {\n"
              << "      \"accountNumber\": \"12345678901234\",\n"
@@ -58,8 +60,8 @@ std::string AccountController::getAccounts(const std::string& userId) {
     );
 }
 
-std::string AccountController::getBalance(const std::string& userId, 
-                                          const std::string& accountNumber) {
+string AccountController::getBalance(const string& userId, 
+                                          const string& accountNumber) {
     if (userId.empty()) {
         return View::JsonResponseBuilder::buildErrorResponse(
             "User not authenticated",
@@ -90,8 +92,8 @@ std::string AccountController::getBalance(const std::string& userId,
     );
 }
 
-std::string AccountController::getTransactions(const std::string& userId,
-                                               const std::string& accountNumber,
+string AccountController::getTransactions(const string& userId,
+                                               const string& accountNumber,
                                                const TransactionFilter& filter) {
     if (userId.empty()) {
         return View::JsonResponseBuilder::buildErrorResponse(
@@ -108,8 +110,8 @@ std::string AccountController::getTransactions(const std::string& userId,
     }
     
     // In real implementation, would query database with filters
-    std::stringstream dataJson;
-    dataJson << std::fixed << std::setprecision(2);
+    stringstream dataJson;
+    dataJson << fixed << setprecision(2);
     dataJson << "{\n"
              << "    \"accountNumber\": \"" << accountNumber << "\",\n"
              << "    \"transactions\": [\n"
@@ -152,10 +154,10 @@ std::string AccountController::getTransactions(const std::string& userId,
     );
 }
 
-std::string AccountController::getStatement(const std::string& userId,
-                                            const std::string& accountNumber,
-                                            const std::string& month,
-                                            const std::string& format) {
+string AccountController::getStatement(const string& userId,
+                                            const string& accountNumber,
+                                            const string& month,
+                                            const string& format) {
     if (userId.empty()) {
         return View::JsonResponseBuilder::buildErrorResponse(
             "User not authenticated",
@@ -171,7 +173,7 @@ std::string AccountController::getStatement(const std::string& userId,
     }
     
     // In real implementation, would generate and return file
-    std::stringstream dataJson;
+    stringstream dataJson;
     dataJson << "{\n"
              << "    \"accountNumber\": \"" << accountNumber << "\",\n"
              << "    \"month\": \"" << month << "\",\n"
@@ -186,7 +188,7 @@ std::string AccountController::getStatement(const std::string& userId,
     );
 }
 
-std::string AccountController::getAccountSummary(const std::string& userId) {
+string AccountController::getAccountSummary(const string& userId) {
     if (userId.empty()) {
         return View::JsonResponseBuilder::buildErrorResponse(
             "User not authenticated",
@@ -194,8 +196,8 @@ std::string AccountController::getAccountSummary(const std::string& userId) {
         );
     }
     
-    std::stringstream dataJson;
-    dataJson << std::fixed << std::setprecision(2);
+    stringstream dataJson;
+    dataJson << fixed << setprecision(2);
     dataJson << "{\n"
              << "    \"totalBalance\": 65000.00,\n"
              << "    \"currency\": \"EGP\",\n"

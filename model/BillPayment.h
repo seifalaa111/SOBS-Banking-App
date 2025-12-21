@@ -12,6 +12,8 @@
 #include <string>
 #include <ctime>
 
+using namespace std;
+
 namespace SOBS {
 namespace Model {
 
@@ -35,11 +37,11 @@ enum class PaymentStatus {
 class BillPayment {
 private:
     long billId;
-    std::string billRef;
+    string billRef;
     long accountId;
     BillType billType;
-    std::string serviceProvider;
-    std::string billAccountNumber;
+    string serviceProvider;
+    string billAccountNumber;
     double amount;
     PaymentStatus status;
     time_t paymentDate;
@@ -50,19 +52,19 @@ private:
 public:
     // Constructors
     BillPayment();
-    BillPayment(long accountId, BillType type, const std::string& provider,
-                const std::string& billAccount, double amount);
+    BillPayment(long accountId, BillType type, const string& provider,
+                const string& billAccount, double amount);
     
     // Destructor
     ~BillPayment();
 
     // Getters
     long getBillId() const;
-    std::string getBillRef() const;
+    string getBillRef() const;
     long getAccountId() const;
     BillType getBillType() const;
-    std::string getServiceProvider() const;
-    std::string getBillAccountNumber() const;
+    string getServiceProvider() const;
+    string getBillAccountNumber() const;
     double getAmount() const;
     PaymentStatus getStatus() const;
     time_t getPaymentDate() const;
@@ -74,8 +76,8 @@ public:
     void setBillId(long id);
     void setAccountId(long id);
     void setBillType(BillType type);
-    void setServiceProvider(const std::string& provider);
-    void setBillAccountNumber(const std::string& account);
+    void setServiceProvider(const string& provider);
+    void setBillAccountNumber(const string& account);
     void setAmount(double amt);
     void setStatus(PaymentStatus s);
     void setScheduledDate(time_t date);
@@ -85,15 +87,15 @@ public:
     bool payBill();
     bool validateBill();
     bool scheduleBillPayment(time_t date);
-    std::string generateReceipt() const;
+    string generateReceipt() const;
 
     // Static methods
-    static std::string generateBillRef();
-    static std::string getBillTypeString(BillType type);
+    static string generateBillRef();
+    static string getBillTypeString(BillType type);
 
     // Utility
-    std::string toString() const;
-    std::string getStatusString() const;
+    string toString() const;
+    string getStatusString() const;
 };
 
 } // namespace Model

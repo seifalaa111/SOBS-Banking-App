@@ -11,6 +11,8 @@
 #include <regex>
 #include <random>
 
+using namespace std;
+
 namespace SOBS {
 namespace Model {
 
@@ -23,8 +25,8 @@ User::User()
 }
 
 // Parameterized Constructor
-User::User(const std::string& nationalId, const std::string& fullName,
-           const std::string& email, const std::string& phoneNumber)
+User::User(const string& nationalId, const string& fullName,
+           const string& email, const string& phoneNumber)
     : userId(0), nationalId(nationalId), fullName(fullName),
       email(email), phoneNumber(phoneNumber),
       status(UserStatus::PENDING_VERIFICATION), role(UserRole::CUSTOMER),
@@ -39,12 +41,12 @@ User::~User() {}
 
 // Getters
 long User::getUserId() const { return userId; }
-std::string User::getCustomerId() const { return customerId; }
-std::string User::getNationalId() const { return nationalId; }
-std::string User::getFullName() const { return fullName; }
-std::string User::getEmail() const { return email; }
-std::string User::getPhoneNumber() const { return phoneNumber; }
-std::string User::getAddress() const { return address; }
+string User::getCustomerId() const { return customerId; }
+string User::getNationalId() const { return nationalId; }
+string User::getFullName() const { return fullName; }
+string User::getEmail() const { return email; }
+string User::getPhoneNumber() const { return phoneNumber; }
+string User::getAddress() const { return address; }
 UserStatus User::getStatus() const { return status; }
 UserRole User::getRole() const { return role; }
 time_t User::getCreatedAt() const { return createdAt; }
@@ -53,19 +55,19 @@ int User::getFailedLoginAttempts() const { return failedLoginAttempts; }
 
 // Setters
 void User::setUserId(long id) { userId = id; }
-void User::setCustomerId(const std::string& id) { customerId = id; }
-void User::setNationalId(const std::string& nid) { nationalId = nid; }
-void User::setFullName(const std::string& name) { fullName = name; }
-void User::setEmail(const std::string& e) { email = e; }
-void User::setPhoneNumber(const std::string& phone) { phoneNumber = phone; }
-void User::setAddress(const std::string& addr) { address = addr; }
-void User::setPasswordHash(const std::string& hash) { passwordHash = hash; }
+void User::setCustomerId(const string& id) { customerId = id; }
+void User::setNationalId(const string& nid) { nationalId = nid; }
+void User::setFullName(const string& name) { fullName = name; }
+void User::setEmail(const string& e) { email = e; }
+void User::setPhoneNumber(const string& phone) { phoneNumber = phone; }
+void User::setAddress(const string& addr) { address = addr; }
+void User::setPasswordHash(const string& hash) { passwordHash = hash; }
 void User::setStatus(UserStatus s) { status = s; }
 void User::setRole(UserRole r) { role = r; }
 void User::setLastLoginAt(time_t t) { lastLoginAt = t; }
 
 // Business Logic Methods
-bool User::validatePassword(const std::string& password) const {
+bool User::validatePassword(const string& password) const {
     // In real implementation, would use bcrypt to compare
     // This is a simplified version for demonstration
     return !passwordHash.empty() && password.length() >= 8;
@@ -125,7 +127,7 @@ bool User::updateProfile() {
     return validateEmail(email) && validatePhoneNumber(phoneNumber);
 }
 
-bool User::verifyOTP(const std::string& code) {
+bool User::verifyOTP(const string& code) {
     // In real implementation, would verify against stored OTP
     return code.length() == 6;
 }
@@ -136,7 +138,7 @@ bool User::resetPassword() {
 }
 
 // Static Validation Methods
-bool User::validateNationalId(const std::string& nid) {
+bool User::validateNationalId(const string& nid) {
     // Egyptian National ID is 14 digits
     if (nid.length() != 14) return false;
     
@@ -150,18 +152,18 @@ bool User::validateNationalId(const std::string& nid) {
     return true;
 }
 
-bool User::validateEmail(const std::string& email) {
-    std::regex pattern(R"([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,})");
-    return std::regex_match(email, pattern);
+bool User::validateEmail(const string& email) {
+    regex pattern(R"([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,})");
+    return regex_match(email, pattern);
 }
 
-bool User::validatePhoneNumber(const std::string& phone) {
+bool User::validatePhoneNumber(const string& phone) {
     // Egyptian phone number: +20 followed by 10 digits
-    std::regex pattern(R"(\+20[0-9]{10})");
-    return std::regex_match(phone, pattern);
+    regex pattern(R"(\+20[0-9]{10})");
+    return regex_match(phone, pattern);
 }
 
-bool User::validatePasswordStrength(const std::string& password) {
+bool User::validatePasswordStrength(const string& password) {
     if (password.length() < 8) return false;
     
     bool hasUpper = false, hasLower = false, hasDigit = false, hasSpecial = false;
@@ -176,18 +178,18 @@ bool User::validatePasswordStrength(const std::string& password) {
     return hasUpper && hasLower && hasDigit && hasSpecial;
 }
 
-std::string User::generateCustomerId() {
-    std::random_device rd;
-    std::mt19937 gen(rd());
-    std::uniform_int_distribution<> dis(100000000, 999999999);
+string User::generateCustomerId() {
+    random_device rd;
+    mt19937 gen(rd());
+    uniform_int_distribution<> dis(100000000, 999999999);
     
-    std::stringstream ss;
+    stringstream ss;
     ss << "CUS" << dis(gen);
     return ss.str();
 }
 
-std::string User::toString() const {
-    std::stringstream ss;
+string User::toString() const {
+    stringstream ss;
     ss << "User{" 
        << "userId=" << userId
        << ", customerId='" << customerId << "'"

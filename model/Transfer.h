@@ -12,6 +12,8 @@
 #include <string>
 #include <ctime>
 
+using namespace std;
+
 namespace SOBS {
 namespace Model {
 
@@ -32,14 +34,14 @@ enum class TransferStatus {
 class Transfer {
 private:
     long transferId;
-    std::string transferRef;         // TRF + timestamp + random
+    string transferRef;         // TRF + timestamp + random
     long senderAccountId;
-    std::string senderAccountNumber;
-    std::string recipientAccountNumber;
-    std::string recipientName;
-    std::string recipientBank;
+    string senderAccountNumber;
+    string recipientAccountNumber;
+    string recipientName;
+    string recipientBank;
     double amount;
-    std::string description;
+    string description;
     TransferType transferType;
     TransferStatus status;
     time_t initiatedAt;
@@ -50,22 +52,22 @@ private:
 public:
     // Constructors
     Transfer();
-    Transfer(long senderAccountId, const std::string& recipientAccount, 
-             double amount, const std::string& description);
+    Transfer(long senderAccountId, const string& recipientAccount, 
+             double amount, const string& description);
     
     // Destructor
     ~Transfer();
 
     // Getters
     long getTransferId() const;
-    std::string getTransferRef() const;
+    string getTransferRef() const;
     long getSenderAccountId() const;
-    std::string getSenderAccountNumber() const;
-    std::string getRecipientAccountNumber() const;
-    std::string getRecipientName() const;
-    std::string getRecipientBank() const;
+    string getSenderAccountNumber() const;
+    string getRecipientAccountNumber() const;
+    string getRecipientName() const;
+    string getRecipientBank() const;
     double getAmount() const;
-    std::string getDescription() const;
+    string getDescription() const;
     TransferType getTransferType() const;
     TransferStatus getStatus() const;
     time_t getInitiatedAt() const;
@@ -75,14 +77,14 @@ public:
 
     // Setters
     void setTransferId(long id);
-    void setTransferRef(const std::string& ref);
+    void setTransferRef(const string& ref);
     void setSenderAccountId(long id);
-    void setSenderAccountNumber(const std::string& num);
-    void setRecipientAccountNumber(const std::string& num);
-    void setRecipientName(const std::string& name);
-    void setRecipientBank(const std::string& bank);
+    void setSenderAccountNumber(const string& num);
+    void setRecipientAccountNumber(const string& num);
+    void setRecipientName(const string& name);
+    void setRecipientBank(const string& bank);
     void setAmount(double amt);
-    void setDescription(const std::string& desc);
+    void setDescription(const string& desc);
     void setTransferType(TransferType type);
     void setStatus(TransferStatus s);
     void setScheduledDate(time_t date);
@@ -94,17 +96,17 @@ public:
     bool scheduleTransfer(time_t date);
     bool processTransfer();
     bool complete();
-    std::string generateReceipt() const;
+    string generateReceipt() const;
 
     // Static methods
-    static std::string generateTransferRef();
+    static string generateTransferRef();
     static bool validateAmount(double amount);
 
     // Utility
-    std::string toString() const;
-    std::string getTypeString() const;
-    std::string getStatusString() const;
-    std::string getFormattedDate(time_t t) const;
+    string toString() const;
+    string getTypeString() const;
+    string getStatusString() const;
+    string getFormattedDate(time_t t) const;
 };
 
 } // namespace Model

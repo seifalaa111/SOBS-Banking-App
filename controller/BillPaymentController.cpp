@@ -9,6 +9,8 @@
 #include <sstream>
 #include <iomanip>
 
+using namespace std;
+
 namespace SOBS {
 namespace Controller {
 
@@ -16,8 +18,8 @@ BillPaymentController::BillPaymentController() {}
 
 BillPaymentController::~BillPaymentController() {}
 
-std::string BillPaymentController::getProviders(const std::string& billType) {
-    std::stringstream dataJson;
+string BillPaymentController::getProviders(const string& billType) {
+    stringstream dataJson;
     
     if (billType == "ELECTRICITY") {
         dataJson << "[\n"
@@ -54,8 +56,8 @@ std::string BillPaymentController::getProviders(const std::string& billType) {
     );
 }
 
-std::string BillPaymentController::getBillAmount(const std::string& provider,
-                                                  const std::string& billAccountNumber) {
+string BillPaymentController::getBillAmount(const string& provider,
+                                                  const string& billAccountNumber) {
     if (billAccountNumber.empty()) {
         return View::JsonResponseBuilder::buildErrorResponse(
             "Bill account number is required",
@@ -64,8 +66,8 @@ std::string BillPaymentController::getBillAmount(const std::string& provider,
     }
     
     // In real implementation, would call provider API
-    std::stringstream dataJson;
-    dataJson << std::fixed << std::setprecision(2);
+    stringstream dataJson;
+    dataJson << fixed << setprecision(2);
     dataJson << "{\n"
              << "    \"provider\": \"" << provider << "\",\n"
              << "    \"billAccountNumber\": \"" << billAccountNumber << "\",\n"
@@ -81,7 +83,7 @@ std::string BillPaymentController::getBillAmount(const std::string& provider,
     );
 }
 
-std::string BillPaymentController::payBill(const std::string& userId,
+string BillPaymentController::payBill(const string& userId,
                                            const BillPaymentRequest& request) {
     if (userId.empty()) {
         return View::JsonResponseBuilder::buildErrorResponse(
@@ -124,7 +126,7 @@ std::string BillPaymentController::payBill(const std::string& userId,
     );
 }
 
-std::string BillPaymentController::getPaymentHistory(const std::string& userId) {
+string BillPaymentController::getPaymentHistory(const string& userId) {
     if (userId.empty()) {
         return View::JsonResponseBuilder::buildErrorResponse(
             "User not authenticated",
@@ -132,8 +134,8 @@ std::string BillPaymentController::getPaymentHistory(const std::string& userId) 
         );
     }
     
-    std::stringstream dataJson;
-    dataJson << std::fixed << std::setprecision(2);
+    stringstream dataJson;
+    dataJson << fixed << setprecision(2);
     dataJson << "[\n"
              << "    {\n"
              << "      \"billRef\": \"BILL1702800000123\",\n"
@@ -159,7 +161,7 @@ std::string BillPaymentController::getPaymentHistory(const std::string& userId) 
     );
 }
 
-std::string BillPaymentController::getSavedBillers(const std::string& userId) {
+string BillPaymentController::getSavedBillers(const string& userId) {
     if (userId.empty()) {
         return View::JsonResponseBuilder::buildErrorResponse(
             "User not authenticated",
@@ -167,7 +169,7 @@ std::string BillPaymentController::getSavedBillers(const std::string& userId) {
         );
     }
     
-    std::stringstream dataJson;
+    stringstream dataJson;
     dataJson << "[\n"
              << "    {\n"
              << "      \"billerId\": \"BILLER001\",\n"
@@ -191,7 +193,7 @@ std::string BillPaymentController::getSavedBillers(const std::string& userId) {
     );
 }
 
-std::string BillPaymentController::scheduleBillPayment(const std::string& userId,
+string BillPaymentController::scheduleBillPayment(const string& userId,
                                                         const BillPaymentRequest& request) {
     if (userId.empty()) {
         return View::JsonResponseBuilder::buildErrorResponse(
@@ -207,8 +209,8 @@ std::string BillPaymentController::scheduleBillPayment(const std::string& userId
         );
     }
     
-    std::stringstream dataJson;
-    dataJson << std::fixed << std::setprecision(2);
+    stringstream dataJson;
+    dataJson << fixed << setprecision(2);
     dataJson << "{\n"
              << "    \"scheduleId\": \"SCHED001\",\n"
              << "    \"billType\": \"" << request.billType << "\",\n"

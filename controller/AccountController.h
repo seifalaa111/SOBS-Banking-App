@@ -15,24 +15,26 @@
 #include "../model/Transaction.h"
 #include "../view/ApiResponse.h"
 
+using namespace std;
+
 namespace SOBS {
 namespace Controller {
 
 // Filter structure for transactions
 struct TransactionFilter {
-    std::string startDate;
-    std::string endDate;
-    std::string transactionType;  // DEBIT, CREDIT, ALL
+    string startDate;
+    string endDate;
+    string transactionType;  // DEBIT, CREDIT, ALL
     double minAmount;
     double maxAmount;
-    std::string category;
-    std::string searchTerm;
+    string category;
+    string searchTerm;
 };
 
 class AccountController {
 private:
     // Helper methods
-    std::string getCurrentUserId();  // Extract from session/JWT
+    string getCurrentUserId();  // Extract from session/JWT
 
 public:
     AccountController();
@@ -42,36 +44,36 @@ public:
      * GET /api/v1/accounts
      * Get all accounts for current user
      */
-    std::string getAccounts(const std::string& userId);
+    string getAccounts(const string& userId);
 
     /**
      * GET /api/v1/accounts/{accountNumber}/balance
      * Get balance for specific account
      */
-    std::string getBalance(const std::string& userId, const std::string& accountNumber);
+    string getBalance(const string& userId, const string& accountNumber);
 
     /**
      * GET /api/v1/accounts/{accountNumber}/transactions
      * Get transaction history with optional filters
      */
-    std::string getTransactions(const std::string& userId, 
-                                const std::string& accountNumber,
+    string getTransactions(const string& userId, 
+                                const string& accountNumber,
                                 const TransactionFilter& filter);
 
     /**
      * GET /api/v1/accounts/{accountNumber}/statement
      * Download account statement
      */
-    std::string getStatement(const std::string& userId,
-                             const std::string& accountNumber,
-                             const std::string& month,
-                             const std::string& format);  // PDF or CSV
+    string getStatement(const string& userId,
+                             const string& accountNumber,
+                             const string& month,
+                             const string& format);  // PDF or CSV
 
     /**
      * GET /api/v1/accounts/summary
      * Get account summary dashboard
      */
-    std::string getAccountSummary(const std::string& userId);
+    string getAccountSummary(const string& userId);
 };
 
 } // namespace Controller

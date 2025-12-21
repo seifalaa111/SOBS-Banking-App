@@ -13,21 +13,23 @@
 #include "../model/Transfer.h"
 #include "../view/ApiResponse.h"
 
+using namespace std;
+
 namespace SOBS {
 namespace Controller {
 
 struct TransferRequest {
-    std::string senderAccountNumber;
-    std::string recipientAccountNumber;
-    std::string recipientBank;  // Empty for intra-bank
+    string senderAccountNumber;
+    string recipientAccountNumber;
+    string recipientBank;  // Empty for intra-bank
     double amount;
-    std::string description;
-    std::string scheduledDate;  // Empty for immediate
+    string description;
+    string scheduledDate;  // Empty for immediate
 };
 
 class TransferController {
 private:
-    std::string getCurrentUserId();
+    string getCurrentUserId();
 
 public:
     TransferController();
@@ -37,52 +39,52 @@ public:
      * POST /api/v1/transfers
      * Initiate a new transfer
      */
-    std::string initiateTransfer(const std::string& userId, 
+    string initiateTransfer(const string& userId, 
                                  const TransferRequest& request);
 
     /**
      * POST /api/v1/transfers/{transferId}/verify
      * Verify transfer with OTP
      */
-    std::string verifyTransfer(const std::string& userId,
-                               const std::string& transferId,
-                               const std::string& otp);
+    string verifyTransfer(const string& userId,
+                               const string& transferId,
+                               const string& otp);
 
     /**
      * GET /api/v1/transfers/{transferId}
      * Get transfer details
      */
-    std::string getTransfer(const std::string& userId,
-                           const std::string& transferId);
+    string getTransfer(const string& userId,
+                           const string& transferId);
 
     /**
      * DELETE /api/v1/transfers/{transferId}
      * Cancel a pending transfer
      */
-    std::string cancelTransfer(const std::string& userId,
-                               const std::string& transferId);
+    string cancelTransfer(const string& userId,
+                               const string& transferId);
 
     /**
      * GET /api/v1/beneficiaries
      * Get saved beneficiaries
      */
-    std::string getBeneficiaries(const std::string& userId);
+    string getBeneficiaries(const string& userId);
 
     /**
      * POST /api/v1/beneficiaries
      * Save a new beneficiary
      */
-    std::string saveBeneficiary(const std::string& userId,
-                                const std::string& accountNumber,
-                                const std::string& name,
-                                const std::string& bank);
+    string saveBeneficiary(const string& userId,
+                                const string& accountNumber,
+                                const string& name,
+                                const string& bank);
 
     /**
      * DELETE /api/v1/beneficiaries/{beneficiaryId}
      * Delete a saved beneficiary
      */
-    std::string deleteBeneficiary(const std::string& userId,
-                                   const std::string& beneficiaryId);
+    string deleteBeneficiary(const string& userId,
+                                   const string& beneficiaryId);
 };
 
 } // namespace Controller

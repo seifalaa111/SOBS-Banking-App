@@ -10,6 +10,8 @@
 #include <random>
 #include <iomanip>
 
+using namespace std;
+
 namespace SOBS {
 namespace Model {
 
@@ -49,12 +51,12 @@ Account::~Account() {}
 
 // Getters
 long Account::getAccountId() const { return accountId; }
-std::string Account::getAccountNumber() const { return accountNumber; }
+string Account::getAccountNumber() const { return accountNumber; }
 long Account::getUserId() const { return userId; }
 AccountType Account::getAccountType() const { return accountType; }
 double Account::getBalance() const { return balance; }
 double Account::getAvailableBalance() const { return availableBalance; }
-std::string Account::getCurrency() const { return currency; }
+string Account::getCurrency() const { return currency; }
 AccountStatus Account::getStatus() const { return status; }
 time_t Account::getOpenedDate() const { return openedDate; }
 double Account::getDailyTransferLimit() const { return dailyTransferLimit; }
@@ -62,12 +64,12 @@ double Account::getDailyTransferred() const { return dailyTransferred; }
 
 // Setters
 void Account::setAccountId(long id) { accountId = id; }
-void Account::setAccountNumber(const std::string& number) { accountNumber = number; }
+void Account::setAccountNumber(const string& number) { accountNumber = number; }
 void Account::setUserId(long id) { userId = id; }
 void Account::setAccountType(AccountType type) { accountType = type; }
 void Account::setBalance(double bal) { balance = bal; availableBalance = bal; }
 void Account::setAvailableBalance(double bal) { availableBalance = bal; }
-void Account::setCurrency(const std::string& curr) { currency = curr; }
+void Account::setCurrency(const string& curr) { currency = curr; }
 void Account::setStatus(AccountStatus s) { status = s; }
 void Account::setDailyTransferLimit(double limit) { dailyTransferLimit = limit; }
 
@@ -109,17 +111,17 @@ void Account::resetDailyTransferred() {
 }
 
 // Static Methods
-std::string Account::generateAccountNumber() {
-    std::random_device rd;
-    std::mt19937 gen(rd());
-    std::uniform_int_distribution<long long> dis(10000000000000LL, 99999999999999LL);
+string Account::generateAccountNumber() {
+    random_device rd;
+    mt19937 gen(rd());
+    uniform_int_distribution<long long> dis(10000000000000LL, 99999999999999LL);
     
-    std::stringstream ss;
+    stringstream ss;
     ss << dis(gen);
     return ss.str();
 }
 
-bool Account::validateAccountNumber(const std::string& number) {
+bool Account::validateAccountNumber(const string& number) {
     if (number.length() != 14) return false;
     
     for (char c : number) {
@@ -128,7 +130,7 @@ bool Account::validateAccountNumber(const std::string& number) {
     return true;
 }
 
-std::string Account::getAccountTypeString() const {
+string Account::getAccountTypeString() const {
     switch (accountType) {
         case AccountType::SAVINGS: return "SAVINGS";
         case AccountType::CHECKING: return "CHECKING";
@@ -137,7 +139,7 @@ std::string Account::getAccountTypeString() const {
     }
 }
 
-std::string Account::getStatusString() const {
+string Account::getStatusString() const {
     switch (status) {
         case AccountStatus::ACTIVE: return "ACTIVE";
         case AccountStatus::FROZEN: return "FROZEN";
@@ -147,9 +149,9 @@ std::string Account::getStatusString() const {
     }
 }
 
-std::string Account::toString() const {
-    std::stringstream ss;
-    ss << std::fixed << std::setprecision(2);
+string Account::toString() const {
+    stringstream ss;
+    ss << fixed << setprecision(2);
     ss << "Account{"
        << "accountNumber='" << accountNumber << "'"
        << ", type=" << getAccountTypeString()

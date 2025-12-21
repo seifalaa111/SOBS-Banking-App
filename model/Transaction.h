@@ -12,6 +12,8 @@
 #include <string>
 #include <ctime>
 
+using namespace std;
+
 namespace SOBS {
 namespace Model {
 
@@ -40,66 +42,66 @@ enum class TransactionStatus {
 class Transaction {
 private:
     long transactionId;
-    std::string transactionRef;      // TXN + timestamp + random
+    string transactionRef;      // TXN + timestamp + random
     long accountId;
     TransactionType type;
     TransactionCategory category;
     double amount;
-    std::string description;
+    string description;
     TransactionStatus status;
     time_t transactionDate;
-    std::string referenceNumber;
+    string referenceNumber;
     double balanceAfter;
 
 public:
     // Constructors
     Transaction();
     Transaction(long accountId, TransactionType type, double amount, 
-                const std::string& description);
+                const string& description);
     
     // Destructor
     ~Transaction();
 
     // Getters
     long getTransactionId() const;
-    std::string getTransactionRef() const;
+    string getTransactionRef() const;
     long getAccountId() const;
     TransactionType getType() const;
     TransactionCategory getCategory() const;
     double getAmount() const;
-    std::string getDescription() const;
+    string getDescription() const;
     TransactionStatus getStatus() const;
     time_t getTransactionDate() const;
-    std::string getReferenceNumber() const;
+    string getReferenceNumber() const;
     double getBalanceAfter() const;
 
     // Setters
     void setTransactionId(long id);
-    void setTransactionRef(const std::string& ref);
+    void setTransactionRef(const string& ref);
     void setAccountId(long id);
     void setType(TransactionType t);
     void setCategory(TransactionCategory cat);
     void setAmount(double amt);
-    void setDescription(const std::string& desc);
+    void setDescription(const string& desc);
     void setStatus(TransactionStatus s);
-    void setReferenceNumber(const std::string& ref);
+    void setReferenceNumber(const string& ref);
     void setBalanceAfter(double bal);
 
     // Business Logic
     bool processTransaction();
-    std::string getDetails() const;
+    string getDetails() const;
     bool cancelTransaction();
-    std::string generateReceipt() const;
+    string generateReceipt() const;
 
     // Static methods
-    static std::string generateTransactionRef();
+    static string generateTransactionRef();
     
     // Utility
-    std::string toString() const;
-    std::string getTypeString() const;
-    std::string getCategoryString() const;
-    std::string getStatusString() const;
-    std::string getFormattedDate() const;
+    string toString() const;
+    string getTypeString() const;
+    string getCategoryString() const;
+    string getStatusString() const;
+    string getFormattedDate() const;
 };
 
 } // namespace Model
