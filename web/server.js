@@ -119,6 +119,22 @@ const isCardFrozen = (userId, accountNumber) => {
     return DB.cards[userId]?.[accountNumber]?.isFrozen || false;
 };
 
+// Check if amount exceeds spending limit
+const getSpendingLimit = (userId, accountNumber) => {
+    return DB.cards[userId]?.[accountNumber]?.spendingLimit || null;
+};
+
+const checkSpendingLimit = (userId, accountNumber, amount) => {
+    const limit = getSpendingLimit(userId, accountNumber);
+    if (limit !== null && amount > limit) {
+        return {
+            allowed: false,
+            message: `Transaction blocked: Amount ${amount.toLocaleString()} EGP exceeds your daily spending limit of ${limit.toLocaleString()} EGP. Please adjust your limit in Card Controls.`
+        };
+    }
+    return { allowed: true };
+};
+
 // --- AUTH ENDPOINTS ---
 app.post('/api/auth/login', (req, res) => {
     const { email, password } = req.body;
@@ -274,6 +290,18 @@ app.post('/api/transfers', (req, res) => {
     }
 
     const transferAmount = parseFloat(amount);
+
+    // CHECK SPENDING LIMIT - BLOCK IF EXCEEDS LIMIT!
+    const cardSettings = DB.cards[userId]?.[sourceAccount.number];
+    if (cardSettings && cardSettings.spendingLimit) {
+        if (transferAmount > cardSettings.spendingLimit) {
+            return res.status(400).json({
+                success: false,
+                message: `Transfer blocked: Amount ${transferAmount.toLocaleString()} EGP exceeds your card spending limit of ${cardSettings.spendingLimit.toLocaleString()} EGP. Please adjust your limit in Card Controls.`
+            });
+        }
+    }
+
     if (sourceAccount.balance < transferAmount) {
         return res.status(400).json({ success: false, message: "Insufficient funds" });
     }
@@ -291,6 +319,69 @@ app.post('/api/transfers', (req, res) => {
     });
 
     res.json({ success: true, data: { transactionId: generateId(), newBalance: sourceAccount.balance } });
+});
+
+// --- BILL PAYMENTS ---
+const BILL_PROVIDERS = {
+    ELECTRICITY: ['Egyptian Electricity', 'North Cairo Electricity', 'South Cairo Electricity'],
+    WATER: ['Cairo Water Company', 'Alexandria Water', 'Giza Water'],
+    INTERNET: ['WE Internet', 'Vodafone Home', 'Orange DSL', 'Etisalat Home'],
+    MOBILE: ['Vodafone', 'Orange', 'Etisalat', 'WE Mobile'],
+    TV: ['beIN Sports', 'OSN', 'Nile TV'],
+    INSURANCE: ['Allianz Egypt', 'AXA Egypt', 'MetLife']
+};
+
+app.get('/api/bills/providers', (req, res) => {
+    const type = req.query.type;
+    res.json({ success: true, data: BILL_PROVIDERS[type] || [] });
+});
+
+app.post('/api/bills/pay', (req, res) => {
+    const { amount, provider, billNumber, description } = req.body;
+    const userId = getCurrentUserId(req);
+    const accounts = DB.accounts[userId] || [];
+    const primaryAccount = accounts[0];
+    const payAmount = parseFloat(amount);
+
+    if (!primaryAccount) {
+        return res.status(400).json({ success: false, message: 'No account found' });
+    }
+
+    // CHECK IF CARD IS FROZEN
+    if (isCardFrozen(userId, primaryAccount.number)) {
+        return res.status(400).json({
+            success: false,
+            message: 'Payment blocked: Your card is frozen. Please unfreeze it in Card Controls.'
+        });
+    }
+
+    // CHECK SPENDING LIMIT
+    const limitCheck = checkSpendingLimit(userId, primaryAccount.number, payAmount);
+    if (!limitCheck.allowed) {
+        return res.status(400).json({ success: false, message: limitCheck.message });
+    }
+
+    // CHECK BALANCE
+    if (primaryAccount.balance < payAmount) {
+        return res.status(400).json({ success: false, message: 'Insufficient funds' });
+    }
+
+    // Process payment
+    primaryAccount.balance -= payAmount;
+
+    // Record transaction
+    if (!DB.transactions[primaryAccount.number]) DB.transactions[primaryAccount.number] = [];
+    DB.transactions[primaryAccount.number].unshift({
+        id: generateId(),
+        date: new Date().toISOString(),
+        type: 'debit',
+        category: 'bill',
+        amount: payAmount,
+        description: description || `${provider} Bill Payment`,
+        status: 'completed'
+    });
+
+    res.json({ success: true, data: { transactionId: generateId(), newBalance: primaryAccount.balance } });
 });
 
 // --- BENEFICIARIES ---
@@ -339,12 +430,49 @@ app.post('/api/savings/goals', (req, res) => {
 
 app.post('/api/savings/goals/:id/deposit', (req, res) => {
     const userId = getCurrentUserId(req);
+    const accounts = DB.accounts[userId] || [];
+    const primaryAccount = accounts[0];
+    const depositAmount = parseFloat(req.body.amount);
+
+    // CHECK SPENDING LIMIT FOR SAVINGS DEPOSIT
+    if (primaryAccount) {
+        const limitCheck = checkSpendingLimit(userId, primaryAccount.number, depositAmount);
+        if (!limitCheck.allowed) {
+            return res.status(400).json({ success: false, message: limitCheck.message });
+        }
+
+        // Check frozen
+        if (isCardFrozen(userId, primaryAccount.number)) {
+            return res.status(400).json({ success: false, message: 'Cannot deposit to savings: Your card is frozen.' });
+        }
+
+        // Check balance
+        if (primaryAccount.balance < depositAmount) {
+            return res.status(400).json({ success: false, message: 'Insufficient funds for savings deposit.' });
+        }
+
+        // Deduct from account
+        primaryAccount.balance -= depositAmount;
+
+        // RECORD TRANSACTION
+        if (!DB.transactions[primaryAccount.number]) DB.transactions[primaryAccount.number] = [];
+        DB.transactions[primaryAccount.number].unshift({
+            id: generateId(),
+            date: new Date().toISOString(),
+            type: 'debit',
+            category: 'savings',
+            amount: depositAmount,
+            description: `Savings Goal Deposit`,
+            status: 'completed'
+        });
+    }
+
     const goal = DB.savingsGoals[userId]?.find(g => g.id === req.params.id);
     if (goal) {
-        goal.currentAmount += parseFloat(req.body.amount);
+        goal.currentAmount += depositAmount;
         return res.json({ success: true, data: goal });
     }
-    res.status(404).json({ success: false });
+    res.status(404).json({ success: false, message: 'Savings goal not found' });
 });
 
 // --- SCHEDULED PAYMENTS ---
