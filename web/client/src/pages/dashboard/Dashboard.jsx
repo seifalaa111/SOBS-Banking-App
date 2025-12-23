@@ -16,6 +16,14 @@ import GlowInput from '../../components/common/GlowInput';
 import Skeleton from '../../components/common/Skeleton';
 import api from '../../api';
 
+// Get time-based greeting
+const getGreeting = () => {
+    const hour = new Date().getHours();
+    if (hour < 12) return { text: 'Good morning', emoji: '☀️' };
+    if (hour < 17) return { text: 'Good afternoon', emoji: '🌤️' };
+    return { text: 'Good evening', emoji: '🌙' };
+};
+
 // Animated Counter Component
 const AnimatedNumber = ({ value, duration = 1500 }) => {
     const [displayValue, setDisplayValue] = useState(0);
@@ -116,8 +124,25 @@ const HeroCreditCard = ({ card, onPrev, onNext, hasMultiple }) => {
                             {/* Top row */}
                             <div className="flex justify-between items-start">
                                 <div className="flex items-center gap-3">
-                                    <div className="w-14 h-10 rounded-lg bg-gradient-to-br from-yellow-300 to-yellow-500 shadow-lg" />
-                                    <Wifi className="w-7 h-7 text-white/70 rotate-90" />
+                                    {/* Realistic EMV Chip with circuit lines */}
+                                    <div className="w-14 h-10 rounded-lg relative overflow-hidden">
+                                        <div className="absolute inset-0 bg-gradient-to-br from-yellow-300 via-yellow-400 to-amber-500 shadow-lg" />
+                                        <div className="absolute inset-0 bg-gradient-to-t from-yellow-600/30 to-transparent" />
+                                        {/* Chip circuit lines */}
+                                        <div className="absolute top-[35%] left-1 right-1 h-[1px] bg-yellow-600/40" />
+                                        <div className="absolute top-[55%] left-1 right-1 h-[1px] bg-yellow-600/40" />
+                                        <div className="absolute top-1 bottom-1 left-[30%] w-[1px] bg-yellow-600/40" />
+                                        <div className="absolute top-1 bottom-1 left-[60%] w-[1px] bg-yellow-600/40" />
+                                        {/* Inner chip rectangle */}
+                                        <div className="absolute top-[25%] left-[20%] right-[20%] bottom-[25%] border border-yellow-600/30 rounded-sm" />
+                                    </div>
+                                    {/* Contactless icon with pulse */}
+                                    <motion.div
+                                        animate={{ opacity: [0.5, 1, 0.5] }}
+                                        transition={{ duration: 2, repeat: Infinity }}
+                                    >
+                                        <Wifi className="w-7 h-7 text-white/70 rotate-90" />
+                                    </motion.div>
                                 </div>
                                 <span className="text-3xl font-bold italic text-white/90 tracking-wider">VISA</span>
                             </div>
@@ -182,28 +207,49 @@ const QuickAction = ({ icon: Icon, label, gradient, to }) => (
     </Link>
 );
 
-// Transaction Item
+// Transaction Item with category colors
 const TransactionItem = ({ tx, index }) => {
     const isCredit = tx.type === 'credit';
+
+    // Category colors for left border
+    const getCategoryColor = (category) => {
+        const colors = {
+            deposit: 'border-l-emerald-500',
+            transfer: 'border-l-blue-500',
+            bill: 'border-l-amber-500',
+            shopping: 'border-l-purple-500',
+            food: 'border-l-orange-500',
+            savings: 'border-l-indigo-500',
+        };
+        return colors[category] || 'border-l-gray-500';
+    };
+
+    // Get initials from description
+    const getInitials = (desc) => {
+        return desc.split(' ').slice(0, 2).map(w => w[0]).join('').toUpperCase();
+    };
 
     return (
         <motion.div
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: index * 0.05 }}
-            className="flex items-center gap-3 p-3 rounded-xl hover:bg-glass-hover transition-all"
+            whileHover={{ x: 4, backgroundColor: 'rgba(255,255,255,0.03)' }}
+            className={`flex items-center gap-3 p-3 rounded-xl border-l-4 ${getCategoryColor(tx.category)} transition-all cursor-pointer`}
         >
             <div className={`w-10 h-10 rounded-xl ${isCredit ? 'bg-gradient-to-br from-emerald-400 to-green-500' : 'bg-gradient-to-br from-rose-400 to-red-500'
-                } flex items-center justify-center`}>
-                {isCredit ? <ArrowDownLeft className="w-4 h-4 text-white" /> : <ArrowUpRight className="w-4 h-4 text-white" />}
+                } flex items-center justify-center text-white text-xs font-bold`}>
+                {isCredit ? <ArrowDownLeft className="w-4 h-4" /> : getInitials(tx.description)}
             </div>
             <div className="flex-1 min-w-0">
                 <p className="text-sm font-medium truncate">{tx.description}</p>
                 <p className="text-xs text-text-muted">{new Date(tx.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</p>
             </div>
-            <p className={`font-mono font-bold ${isCredit ? 'text-status-success' : 'text-status-error'}`}>
-                {isCredit ? '+' : '-'}{tx.amount.toLocaleString()}
-            </p>
+            <div className="text-right">
+                <p className={`font-mono font-bold ${isCredit ? 'text-status-success' : 'text-status-error'}`}>
+                    {isCredit ? '+' : '-'}{tx.amount.toLocaleString()}
+                </p>
+            </div>
         </motion.div>
     );
 };
@@ -412,13 +458,20 @@ export default function Dashboard() {
             <div className="flex items-center justify-between">
                 <div>
                     <motion.h1
-                        className="text-3xl font-bold"
+                        className="text-3xl font-bold flex items-center gap-3"
                         initial={{ opacity: 0, y: -10 }}
                         animate={{ opacity: 1, y: 0 }}
                     >
-                        Welcome, <span className="bg-clip-text text-transparent bg-gradient-to-r from-accent-cyan to-accent-purple">Seif</span>
+                        {getGreeting().text}, <span className="bg-clip-text text-transparent bg-gradient-to-r from-accent-cyan to-accent-purple">Seif</span>
+                        <motion.span
+                            className="text-2xl"
+                            animate={{ rotate: [0, 10, -10, 0] }}
+                            transition={{ duration: 2, repeat: Infinity, repeatDelay: 3 }}
+                        >
+                            {getGreeting().emoji}
+                        </motion.span>
                     </motion.h1>
-                    <p className="text-text-muted text-sm">Your financial overview</p>
+                    <p className="text-text-muted text-sm">Here's your financial overview</p>
                 </div>
 
                 <div className="flex items-center gap-3">
