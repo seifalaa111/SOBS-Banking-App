@@ -1,15 +1,15 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { UserPlus, Mail, Lock, User, Phone, CreditCard, Eye, EyeOff, Check, X } from 'lucide-react';
 import GlassCard from '../../components/common/GlassCard';
 import GlowInput from '../../components/common/GlowInput';
 import NeonButton from '../../components/common/NeonButton';
 import api from '../../api';
 
+// Password requirement indicator - NO ICONS, use text symbols
 const PasswordRequirement = ({ met, text }) => (
     <div className={`flex items-center gap-2 text-xs ${met ? 'text-status-success' : 'text-text-muted'}`}>
-        {met ? <Check className="w-3 h-3" /> : <X className="w-3 h-3" />}
+        <span className="w-4 text-center">{met ? '✓' : '○'}</span>
         {text}
     </div>
 );
@@ -80,9 +80,14 @@ export default function Register() {
         return (
             <div className="min-h-screen flex items-center justify-center p-4">
                 <GlassCard className="w-full max-w-md text-center py-12">
-                    <div className="w-16 h-16 bg-status-success/20 rounded-full flex items-center justify-center mx-auto mb-4">
-                        <Check className="w-8 h-8 text-status-success" />
-                    </div>
+                    <motion.div
+                        initial={{ scale: 0 }}
+                        animate={{ scale: 1 }}
+                        transition={{ type: "spring", bounce: 0.5 }}
+                        className="w-20 h-20 bg-status-success/20 rounded-full flex items-center justify-center mx-auto mb-4 text-4xl"
+                    >
+                        ✓
+                    </motion.div>
                     <h2 className="text-2xl font-bold text-white mb-2">Account Created!</h2>
                     <p className="text-text-secondary">Redirecting to login...</p>
                 </GlassCard>
@@ -91,115 +96,186 @@ export default function Register() {
     }
 
     return (
-        <div className="min-h-screen flex items-center justify-center p-4 relative overflow-hidden">
-            <div className="absolute top-[-20%] left-[-10%] w-[50%] h-[50%] bg-accent-purple/20 blur-[120px] rounded-full pointer-events-none" />
-            <div className="absolute bottom-[-20%] right-[-10%] w-[50%] h-[50%] bg-accent-cyan/10 blur-[120px] rounded-full pointer-events-none" />
-
-            <GlassCard className="w-full max-w-lg relative z-10">
-                <div className="text-center mb-6">
-                    <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-gradient-to-br from-accent-purple to-accent-cyan mb-4">
-                        <UserPlus className="w-7 h-7 text-white" />
-                    </div>
-                    <h1 className="text-2xl font-bold text-white">Create Account</h1>
-                    <p className="text-text-secondary text-sm mt-1">Join SOBS Banking System</p>
+        <div className="min-h-screen flex">
+            {/* Left Panel - Branding */}
+            <div className="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-accent-cyan/20 via-void to-accent-purple/20 relative overflow-hidden flex-col justify-center px-16">
+                <div className="absolute inset-0">
+                    <motion.div
+                        className="absolute top-1/4 right-1/4 w-96 h-96 bg-accent-cyan/20 rounded-full blur-[100px]"
+                        animate={{ scale: [1, 1.2, 1] }}
+                        transition={{ duration: 15, repeat: Infinity }}
+                    />
+                    <motion.div
+                        className="absolute bottom-1/4 left-1/4 w-80 h-80 bg-accent-purple/20 rounded-full blur-[100px]"
+                        animate={{ scale: [1.2, 1, 1.2] }}
+                        transition={{ duration: 10, repeat: Infinity }}
+                    />
                 </div>
 
-                <motion.form onSubmit={handleSubmit} className="space-y-4">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <GlowInput
-                            id="fullName"
-                            name="fullName"
-                            label="Full Name"
-                            placeholder="Ahmed Mohamed"
-                            value={formData.fullName}
-                            onChange={handleChange}
-                            error={formData.fullName && formData.fullName.length < 3 ? 'Min 3 characters' : ''}
-                        />
-                        <GlowInput
-                            id="email"
-                            name="email"
-                            type="email"
-                            label="Email Address"
-                            placeholder="you@example.com"
-                            value={formData.email}
-                            onChange={handleChange}
-                            error={formData.email && !isEmailValid ? 'Invalid email format' : ''}
-                        />
-                    </div>
-
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <GlowInput
-                            id="phone"
-                            name="phone"
-                            label="Phone Number"
-                            placeholder="+201001234567"
-                            value={formData.phone}
-                            onChange={handleChange}
-                            error={formData.phone && !isPhoneValid ? 'Invalid phone number' : ''}
-                        />
-                        <GlowInput
-                            id="nationalId"
-                            name="nationalId"
-                            label="National ID (Optional)"
-                            placeholder="29901011234567"
-                            value={formData.nationalId}
-                            onChange={handleChange}
-                        />
-                    </div>
-
-                    <div className="relative">
-                        <GlowInput
-                            id="password"
-                            name="password"
-                            type={showPassword ? 'text' : 'password'}
-                            label="Password"
-                            placeholder="••••••••"
-                            value={formData.password}
-                            onChange={handleChange}
-                        />
-                        <button
-                            type="button"
-                            onClick={() => setShowPassword(!showPassword)}
-                            className="absolute right-3 top-9 text-text-muted hover:text-white"
-                        >
-                            {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
-                        </button>
-                    </div>
-
-                    {/* Password Requirements */}
-                    {formData.password && (
-                        <div className="grid grid-cols-2 gap-2 p-3 rounded-lg bg-glass-bg border border-glass-border">
-                            <PasswordRequirement met={passwordChecks.length} text="8+ characters" />
-                            <PasswordRequirement met={passwordChecks.uppercase} text="Uppercase letter" />
-                            <PasswordRequirement met={passwordChecks.lowercase} text="Lowercase letter" />
-                            <PasswordRequirement met={passwordChecks.number} text="Number" />
-                            <PasswordRequirement met={passwordChecks.special} text="Special character" />
-                            <PasswordRequirement met={passwordsMatch} text="Passwords match" />
+                <div className="relative z-10">
+                    <motion.div
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        className="flex items-center gap-4 mb-12"
+                    >
+                        <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-accent-purple to-accent-cyan flex items-center justify-center shadow-2xl shadow-accent-cyan/30 text-white text-2xl font-bold">
+                            ◆
                         </div>
-                    )}
+                        <div>
+                            <h2 className="text-3xl font-bold text-white">SOBS</h2>
+                            <p className="text-text-muted text-sm">Premium Banking</p>
+                        </div>
+                    </motion.div>
 
-                    <GlowInput
-                        id="confirmPassword"
-                        name="confirmPassword"
-                        type="password"
-                        label="Confirm Password"
-                        placeholder="••••••••"
-                        value={formData.confirmPassword}
-                        onChange={handleChange}
-                        error={formData.confirmPassword && !passwordsMatch ? 'Passwords do not match' : ''}
-                    />
+                    <motion.h1
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 0.1 }}
+                        className="text-5xl font-bold text-white leading-tight mb-6"
+                    >
+                        Start your<br />
+                        <span className="bg-clip-text text-transparent bg-gradient-to-r from-accent-cyan to-accent-purple">
+                            journey today.
+                        </span>
+                    </motion.h1>
 
-                    {error && <div className="p-3 rounded-lg bg-status-error/10 text-status-error text-sm text-center border border-status-error/20">{error}</div>}
+                    <motion.div
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 0.2 }}
+                        className="space-y-4"
+                    >
+                        <div className="p-4 rounded-2xl bg-white/5 backdrop-blur border border-white/10">
+                            <p className="text-lg font-semibold text-white">⚡ Instant Setup</p>
+                            <p className="text-text-muted text-sm">Create your account in under 2 minutes</p>
+                        </div>
+                        <div className="p-4 rounded-2xl bg-white/5 backdrop-blur border border-white/10">
+                            <p className="text-lg font-semibold text-white">💳 Free Virtual Card</p>
+                            <p className="text-text-muted text-sm">Get your first virtual card instantly</p>
+                        </div>
+                    </motion.div>
+                </div>
+            </div>
 
-                    <NeonButton type="submit" className="w-full" loading={loading} disabled={loading || !isFormValid}>
-                        Create Account
-                    </NeonButton>
+            {/* Right Panel - Form */}
+            <div className="flex-1 flex items-center justify-center p-8 relative overflow-y-auto">
+                <div className="absolute inset-0 lg:hidden">
+                    <div className="absolute top-[-20%] left-[-10%] w-[50%] h-[50%] bg-accent-purple/20 blur-[120px] rounded-full pointer-events-none" />
+                    <div className="absolute bottom-[-20%] right-[-10%] w-[50%] h-[50%] bg-accent-cyan/10 blur-[120px] rounded-full pointer-events-none" />
+                </div>
 
-                    <div className="text-center text-sm text-text-muted">
-                        Already have an account? <Link to="/login" className="text-accent-cyan hover:underline">Sign In</Link>
+                <div className="w-full max-w-lg relative z-10">
+                    <div className="lg:hidden text-center mb-6">
+                        <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-gradient-to-br from-accent-purple to-accent-cyan shadow-lg mb-4 text-white text-xl font-bold">
+                            ◆
+                        </div>
+                        <h2 className="text-2xl font-bold text-white">SOBS</h2>
                     </div>
-                </motion.form>
-            </GlassCard>
+
+                    <GlassCard>
+                        <div className="text-center mb-6">
+                            <h1 className="text-2xl font-bold text-white">Create Account</h1>
+                            <p className="text-text-secondary text-sm mt-1">Join SOBS Banking System</p>
+                        </div>
+
+                        <motion.form onSubmit={handleSubmit} className="space-y-4">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <GlowInput
+                                    id="fullName"
+                                    name="fullName"
+                                    label="Full Name"
+                                    placeholder="Ahmed Mohamed"
+                                    value={formData.fullName}
+                                    onChange={handleChange}
+                                    error={formData.fullName && formData.fullName.length < 3 ? 'Min 3 characters' : ''}
+                                />
+                                <GlowInput
+                                    id="email"
+                                    name="email"
+                                    type="email"
+                                    label="Email Address"
+                                    placeholder="you@example.com"
+                                    value={formData.email}
+                                    onChange={handleChange}
+                                    error={formData.email && !isEmailValid ? 'Invalid email format' : ''}
+                                />
+                            </div>
+
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <GlowInput
+                                    id="phone"
+                                    name="phone"
+                                    label="Phone Number"
+                                    placeholder="+201001234567"
+                                    value={formData.phone}
+                                    onChange={handleChange}
+                                    error={formData.phone && !isPhoneValid ? 'Invalid phone number' : ''}
+                                />
+                                <GlowInput
+                                    id="nationalId"
+                                    name="nationalId"
+                                    label="National ID (Optional)"
+                                    placeholder="29901011234567"
+                                    value={formData.nationalId}
+                                    onChange={handleChange}
+                                />
+                            </div>
+
+                            <div className="relative">
+                                <GlowInput
+                                    id="password"
+                                    name="password"
+                                    type={showPassword ? 'text' : 'password'}
+                                    label="Password"
+                                    placeholder="••••••••"
+                                    value={formData.password}
+                                    onChange={handleChange}
+                                />
+                                <button
+                                    type="button"
+                                    onClick={() => setShowPassword(!showPassword)}
+                                    className="absolute right-3 top-9 text-text-muted hover:text-white text-sm"
+                                >
+                                    {showPassword ? '🙈' : '👁️'}
+                                </button>
+                            </div>
+
+                            {/* Password Requirements */}
+                            {formData.password && (
+                                <div className="grid grid-cols-2 gap-2 p-3 rounded-lg bg-glass-bg border border-glass-border">
+                                    <PasswordRequirement met={passwordChecks.length} text="8+ characters" />
+                                    <PasswordRequirement met={passwordChecks.uppercase} text="Uppercase letter" />
+                                    <PasswordRequirement met={passwordChecks.lowercase} text="Lowercase letter" />
+                                    <PasswordRequirement met={passwordChecks.number} text="Number" />
+                                    <PasswordRequirement met={passwordChecks.special} text="Special character" />
+                                    <PasswordRequirement met={passwordsMatch} text="Passwords match" />
+                                </div>
+                            )}
+
+                            <GlowInput
+                                id="confirmPassword"
+                                name="confirmPassword"
+                                type="password"
+                                label="Confirm Password"
+                                placeholder="••••••••"
+                                value={formData.confirmPassword}
+                                onChange={handleChange}
+                                error={formData.confirmPassword && !passwordsMatch ? 'Passwords do not match' : ''}
+                            />
+
+                            {error && <div className="p-3 rounded-lg bg-status-error/10 text-status-error text-sm text-center border border-status-error/20">{error}</div>}
+
+                            <NeonButton type="submit" className="w-full" loading={loading} disabled={loading || !isFormValid}>
+                                Create Account →
+                            </NeonButton>
+
+                            <div className="text-center text-sm text-text-muted">
+                                Already have an account? <Link to="/login" className="text-accent-cyan hover:underline">Sign In →</Link>
+                            </div>
+                        </motion.form>
+                    </GlassCard>
+                </div>
+            </div>
         </div>
     );
 }

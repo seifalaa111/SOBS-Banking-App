@@ -1,10 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { motion, useScroll, useTransform } from 'framer-motion';
-import { Shield, Zap, CreditCard, Send, ArrowRight, Sparkles, Globe, Lock, ChevronDown, Star, Users, TrendingUp } from 'lucide-react';
 import NeonButton from '../../components/common/NeonButton';
 
-// Floating card component
+// Floating card component - NO ICONS
 const FloatingCard = ({ delay = 0, className = '' }) => (
     <motion.div
         initial={{ opacity: 0, y: 50 }}
@@ -63,16 +62,36 @@ const StatCounter = ({ value, label, prefix = '', suffix = '' }) => {
     );
 };
 
+// Feature Card - NO ICONS, uses emojis
+const FeatureCard = ({ emoji, title, desc, color, delay }) => (
+    <motion.div
+        initial={{ opacity: 0, y: 30 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true }}
+        transition={{ delay }}
+        whileHover={{ y: -10, scale: 1.02 }}
+        className="bg-white/[0.02] backdrop-blur-xl border border-white/[0.05] rounded-3xl p-8 hover:border-cyan-500/30 transition-all duration-300 group cursor-pointer"
+    >
+        <motion.div
+            className={`w-16 h-16 rounded-2xl bg-gradient-to-br ${color} flex items-center justify-center mb-6 shadow-xl group-hover:scale-110 group-hover:rotate-3 transition-all duration-300 text-3xl`}
+        >
+            {emoji}
+        </motion.div>
+        <h3 className="text-xl font-semibold text-white mb-3">{title}</h3>
+        <p className="text-gray-400">{desc}</p>
+    </motion.div>
+);
+
 export default function Landing() {
     const { scrollY } = useScroll();
     const heroY = useTransform(scrollY, [0, 500], [0, 150]);
     const heroOpacity = useTransform(scrollY, [0, 300], [1, 0]);
 
     const features = [
-        { icon: Shield, title: 'Bank-Grade Security', desc: '2FA authentication & encrypted transactions', color: 'from-emerald-400 to-green-500' },
-        { icon: Zap, title: 'Instant Transfers', desc: 'Send money in seconds, not days', color: 'from-amber-400 to-orange-500' },
-        { icon: CreditCard, title: 'Virtual Cards', desc: 'Create and manage multiple cards', color: 'from-violet-400 to-purple-500' },
-        { icon: Globe, title: 'Pay Bills Anywhere', desc: 'Electricity, water, internet & more', color: 'from-cyan-400 to-blue-500' },
+        { emoji: '🔒', title: 'Bank-Grade Security', desc: '2FA authentication & encrypted transactions', color: 'from-emerald-400 to-green-500' },
+        { emoji: '⚡', title: 'Instant Transfers', desc: 'Send money in seconds, not days', color: 'from-amber-400 to-orange-500' },
+        { emoji: '💳', title: 'Virtual Cards', desc: 'Create and manage multiple cards', color: 'from-violet-400 to-purple-500' },
+        { emoji: '🌍', title: 'Pay Bills Anywhere', desc: 'Electricity, water, internet & more', color: 'from-cyan-400 to-blue-500' },
     ];
 
     return (
@@ -107,7 +126,7 @@ export default function Landing() {
                 />
             </div>
 
-            {/* Navigation */}
+            {/* Navigation - NO ICONS */}
             <nav className="relative z-10 flex justify-between items-center px-8 py-6 max-w-7xl mx-auto">
                 <motion.div
                     initial={{ opacity: 0, x: -20 }}
@@ -115,10 +134,10 @@ export default function Landing() {
                     className="flex items-center gap-3"
                 >
                     <motion.div
-                        className="w-12 h-12 rounded-2xl bg-gradient-to-br from-purple-500 to-cyan-500 flex items-center justify-center shadow-lg shadow-purple-500/30"
+                        className="w-12 h-12 rounded-2xl bg-gradient-to-br from-purple-500 to-cyan-500 flex items-center justify-center shadow-lg shadow-purple-500/30 text-white text-xl font-bold"
                         whileHover={{ rotate: 10, scale: 1.1 }}
                     >
-                        <Lock className="w-6 h-6 text-white" />
+                        ◆
                     </motion.div>
                     <span className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-white to-gray-400">SOBS</span>
                 </motion.div>
@@ -133,7 +152,7 @@ export default function Landing() {
                     </Link>
                     <Link to="/register">
                         <NeonButton className="py-2.5 px-6">
-                            Get Started <ArrowRight className="w-4 h-4" />
+                            Get Started →
                         </NeonButton>
                     </Link>
                 </motion.div>
@@ -158,8 +177,9 @@ export default function Landing() {
                         <motion.span
                             animate={{ rotate: [0, 360] }}
                             transition={{ duration: 3, repeat: Infinity, ease: "linear" }}
+                            className="text-lg"
                         >
-                            <Sparkles className="w-4 h-4 text-cyan-400" />
+                            ✨
                         </motion.span>
                         <span className="text-gray-300">Next-Gen Banking Platform</span>
                         <span className="px-2 py-0.5 rounded-full bg-cyan-500/20 text-cyan-400 text-xs font-medium">NEW</span>
@@ -204,7 +224,7 @@ export default function Landing() {
                         <Link to="/register">
                             <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
                                 <NeonButton className="px-10 py-4 text-lg w-full sm:w-auto">
-                                    Start Free <ArrowRight className="w-5 h-5" />
+                                    Start Free →
                                 </NeonButton>
                             </motion.div>
                         </Link>
@@ -225,7 +245,7 @@ export default function Landing() {
                     transition={{ duration: 2, repeat: Infinity }}
                 >
                     <span className="text-gray-500 text-sm mb-2">Scroll to explore</span>
-                    <ChevronDown className="w-5 h-5 text-gray-500" />
+                    <span className="text-gray-500 text-xl">↓</span>
                 </motion.div>
             </motion.main>
 
@@ -241,7 +261,7 @@ export default function Landing() {
                 </div>
             </section>
 
-            {/* Features Grid */}
+            {/* Features Grid - NO ICONS, uses emojis */}
             <section className="relative z-10 py-24">
                 <div className="max-w-7xl mx-auto px-8">
                     <motion.div
@@ -258,23 +278,7 @@ export default function Landing() {
 
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                         {features.map((feature, i) => (
-                            <motion.div
-                                key={i}
-                                initial={{ opacity: 0, y: 30 }}
-                                whileInView={{ opacity: 1, y: 0 }}
-                                viewport={{ once: true }}
-                                transition={{ delay: i * 0.1 }}
-                                whileHover={{ y: -10, scale: 1.02 }}
-                                className="bg-white/[0.02] backdrop-blur-xl border border-white/[0.05] rounded-3xl p-8 hover:border-cyan-500/30 transition-all duration-300 group cursor-pointer"
-                            >
-                                <motion.div
-                                    className={`w-16 h-16 rounded-2xl bg-gradient-to-br ${feature.color} flex items-center justify-center mb-6 shadow-xl group-hover:scale-110 group-hover:rotate-3 transition-all duration-300`}
-                                >
-                                    <feature.icon className="w-8 h-8 text-white" />
-                                </motion.div>
-                                <h3 className="text-xl font-semibold text-white mb-3">{feature.title}</h3>
-                                <p className="text-gray-400">{feature.desc}</p>
-                            </motion.div>
+                            <FeatureCard key={i} {...feature} delay={i * 0.1} />
                         ))}
                     </div>
                 </div>
@@ -297,20 +301,20 @@ export default function Landing() {
                         </p>
                         <Link to="/register">
                             <NeonButton className="px-12 py-5 text-lg">
-                                Create Your Free Account <ArrowRight className="w-5 h-5" />
+                                Create Your Free Account →
                             </NeonButton>
                         </Link>
                     </motion.div>
                 </div>
             </section>
 
-            {/* Footer */}
+            {/* Footer - NO ICONS */}
             <footer className="relative z-10 border-t border-white/5 py-12">
                 <div className="max-w-7xl mx-auto px-8">
                     <div className="flex flex-col md:flex-row justify-between items-center gap-6">
                         <div className="flex items-center gap-3">
-                            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-purple-500 to-cyan-500 flex items-center justify-center">
-                                <Lock className="w-5 h-5 text-white" />
+                            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-purple-500 to-cyan-500 flex items-center justify-center text-white font-bold">
+                                ◆
                             </div>
                             <span className="text-lg font-bold text-white">SOBS</span>
                         </div>

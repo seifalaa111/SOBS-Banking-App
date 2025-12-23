@@ -1,39 +1,104 @@
 import React, { useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import {
-    LayoutDashboard, Send, Receipt, History, User, LogOut, Menu, X,
-    PiggyBank, Users, BarChart3, QrCode, CreditCard, Bell, Calendar, HelpCircle
-} from 'lucide-react';
 import { twMerge } from 'tailwind-merge';
 import { motion, AnimatePresence } from 'framer-motion';
 
-const SidebarItem = ({ icon: Icon, label, to, active, badge }) => (
+// Text-only menu item with gradient underline for active state
+const SidebarItem = ({ label, to, active, badge }) => (
     <Link
         to={to}
         className={twMerge(
-            "flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 group",
+            "relative block px-4 py-3 transition-all duration-200",
             active
-                ? "bg-accent-cyan/10 text-accent-cyan border border-accent-cyan/20"
-                : "text-text-secondary hover:bg-glass-hover hover:text-white"
+                ? "text-white font-semibold"
+                : "text-text-secondary hover:text-white"
         )}
     >
-        <Icon className={twMerge("w-5 h-5", active && "animate-pulse")} />
-        <span className="font-medium flex-1">{label}</span>
+        <span className="relative z-10">{label}</span>
+        {active && (
+            <motion.div
+                layoutId="activeIndicator"
+                className="absolute bottom-1 left-4 right-4 h-0.5 bg-gradient-to-r from-accent-cyan to-accent-purple rounded-full"
+                transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
+            />
+        )}
         {badge > 0 && (
-            <span className="px-2 py-0.5 text-xs rounded-full bg-status-error text-white font-bold">
+            <span className="absolute right-4 top-1/2 -translate-y-1/2 px-2 py-0.5 text-xs rounded-full bg-status-error text-white font-bold">
                 {badge > 9 ? '9+' : badge}
             </span>
         )}
-        {active && <div className="w-1.5 h-1.5 rounded-full bg-accent-cyan shadow-[0_0_10px_#00f2ff]" />}
     </Link>
 );
 
+// Section divider with subtle line
 const SidebarSection = ({ title, children }) => (
     <div className="space-y-1">
-        <p className="px-4 py-2 text-xs font-semibold text-text-muted uppercase tracking-wider">{title}</p>
+        <p className="px-4 py-2 text-[11px] font-semibold text-text-muted uppercase tracking-widest">{title}</p>
         {children}
     </div>
 );
+
+// Quick action card with motion graphic
+const QuickActionCard = () => (
+    <Link to="/transfer">
+        <motion.div
+            whileHover={{ scale: 1.02, y: -2 }}
+            whileTap={{ scale: 0.98 }}
+            className="mx-4 mb-6 p-4 rounded-2xl bg-gradient-to-br from-accent-cyan/20 to-accent-purple/20 border border-accent-cyan/30 cursor-pointer group"
+        >
+            <div className="flex items-center justify-between mb-2">
+                <span className="text-sm font-semibold text-white">Quick Transfer</span>
+                <motion.span
+                    animate={{ x: [0, 5, 0] }}
+                    transition={{ duration: 1.5, repeat: Infinity }}
+                    className="text-accent-cyan"
+                >
+                    →
+                </motion.span>
+            </div>
+            <div className="h-1 bg-glass-border rounded-full overflow-hidden">
+                <motion.div
+                    className="h-full bg-gradient-to-r from-accent-cyan to-accent-purple"
+                    animate={{ x: ['-100%', '100%'] }}
+                    transition={{ duration: 2, repeat: Infinity, ease: 'linear' }}
+                    style={{ width: '50%' }}
+                />
+            </div>
+        </motion.div>
+    </Link>
+);
+
+// User profile card at bottom
+const UserProfileCard = ({ onLogout }) => {
+    const user = JSON.parse(localStorage.getItem('user') || '{}');
+    const initials = (user.name || 'User').split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
+
+    return (
+        <div className="mx-4 p-4 rounded-2xl bg-glass-bg border border-glass-border">
+            <div className="flex items-center gap-3 mb-3">
+                <div className="w-10 h-10 rounded-full bg-gradient-to-br from-accent-purple to-accent-cyan flex items-center justify-center text-white font-bold text-sm">
+                    {initials}
+                </div>
+                <div className="flex-1 min-w-0">
+                    <p className="font-semibold text-white truncate">{user.name || 'User'}</p>
+                    <p className="text-xs text-text-muted truncate">{user.email || 'user@email.com'}</p>
+                </div>
+                <div className="w-2 h-2 rounded-full bg-status-success shadow-[0_0_8px_#10b981]" title="Online" />
+            </div>
+            <div className="flex gap-2">
+                <Link to="/profile" className="flex-1 text-center py-2 text-xs text-text-secondary hover:text-white transition-colors rounded-lg hover:bg-glass-hover">
+                    Profile
+                </Link>
+                <button
+                    onClick={onLogout}
+                    className="flex-1 text-center py-2 text-xs text-status-error hover:bg-status-error/10 transition-colors rounded-lg"
+                >
+                    Sign Out
+                </button>
+            </div>
+        </div>
+    );
+};
 
 const DashboardLayout = ({ children }) => {
     const location = useLocation();
@@ -48,46 +113,48 @@ const DashboardLayout = ({ children }) => {
 
     const NavContent = () => (
         <>
-            <div className="flex items-center gap-3 px-4 mb-8">
-                <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-accent-purple to-accent-cyan flex items-center justify-center font-bold text-white shadow-lg">S</div>
+            {/* Logo */}
+            <div className="flex items-center gap-3 px-4 mb-6">
+                <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-accent-purple to-accent-cyan flex items-center justify-center shadow-lg shadow-accent-purple/30">
+                    <span className="text-white font-bold text-lg">◆</span>
+                </div>
                 <div>
-                    <span className="text-xl font-bold">SOBS</span>
-                    <span className="text-xs text-accent-cyan block">Premium Banking</span>
+                    <span className="text-xl font-bold text-white">SOBS</span>
+                    <span className="text-[10px] text-accent-cyan block tracking-wider">PREMIUM BANKING</span>
                 </div>
             </div>
 
+            {/* Quick Action Card */}
+            <QuickActionCard />
+
+            {/* Navigation */}
             <nav className="flex-1 space-y-6 overflow-y-auto">
-                <SidebarSection title="Main">
-                    <SidebarItem icon={LayoutDashboard} label="Dashboard" to="/dashboard" active={location.pathname === '/dashboard'} />
-                    <SidebarItem icon={Send} label="Transfer" to="/transfer" active={location.pathname === '/transfer'} />
-                    <SidebarItem icon={Receipt} label="Pay Bills" to="/bills" active={location.pathname === '/bills'} />
-                    <SidebarItem icon={History} label="Transactions" to="/transactions" active={location.pathname === '/transactions'} />
+                <SidebarSection title="Overview">
+                    <SidebarItem label="Dashboard" to="/dashboard" active={location.pathname === '/dashboard'} />
+                    <SidebarItem label="Transactions" to="/transactions" active={location.pathname === '/transactions'} />
                 </SidebarSection>
 
-                <SidebarSection title="Features">
-                    <SidebarItem icon={PiggyBank} label="Savings Goals" to="/savings" active={location.pathname === '/savings'} />
-                    <SidebarItem icon={Users} label="Beneficiaries" to="/beneficiaries" active={location.pathname === '/beneficiaries'} />
-                    <SidebarItem icon={Calendar} label="Scheduled" to="/scheduled" active={location.pathname === '/scheduled'} />
-                    <SidebarItem icon={QrCode} label="QR Payments" to="/qr" active={location.pathname === '/qr'} />
+                <SidebarSection title="Payments">
+                    <SidebarItem label="Send Money" to="/transfer" active={location.pathname === '/transfer'} />
+                    <SidebarItem label="Pay Bills" to="/bills" active={location.pathname === '/bills'} />
+                    <SidebarItem label="Beneficiaries" to="/beneficiaries" active={location.pathname === '/beneficiaries'} />
                 </SidebarSection>
 
-                <SidebarSection title="Insights">
-                    <SidebarItem icon={BarChart3} label="Analytics" to="/analytics" active={location.pathname === '/analytics'} />
-                    <SidebarItem icon={CreditCard} label="Card Controls" to="/cards" active={location.pathname === '/cards'} />
-                    <SidebarItem icon={Bell} label="Notifications" to="/notifications" active={location.pathname === '/notifications'} badge={3} />
+                <SidebarSection title="Manage">
+                    <SidebarItem label="My Cards" to="/cards" active={location.pathname === '/cards'} />
+                    <SidebarItem label="Savings Goals" to="/savings" active={location.pathname === '/savings'} />
+                    <SidebarItem label="Analytics" to="/analytics" active={location.pathname === '/analytics'} />
+                </SidebarSection>
+
+                <SidebarSection title="More">
+                    <SidebarItem label="Notifications" to="/notifications" active={location.pathname === '/notifications'} badge={3} />
+                    <SidebarItem label="Support" to="/support" active={location.pathname === '/support'} />
                 </SidebarSection>
             </nav>
 
-            <div className="mt-auto pt-6 border-t border-glass-border space-y-2">
-                <SidebarItem icon={HelpCircle} label="Support" to="/support" active={location.pathname === '/support'} />
-                <SidebarItem icon={User} label="Profile" to="/profile" active={location.pathname === '/profile'} />
-                <button
-                    onClick={handleLogout}
-                    className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-status-error hover:bg-status-error/10 transition-colors"
-                >
-                    <LogOut className="w-5 h-5" />
-                    <span className="font-medium">Logout</span>
-                </button>
+            {/* User Profile Card */}
+            <div className="mt-auto pt-6 border-t border-glass-border">
+                <UserProfileCard onLogout={handleLogout} />
             </div>
         </>
     );
@@ -95,7 +162,7 @@ const DashboardLayout = ({ children }) => {
     return (
         <div className="flex min-h-screen bg-void text-text-primary">
             {/* Desktop Sidebar */}
-            <aside className="hidden lg:flex flex-col w-72 p-6 bg-secondary/50 backdrop-blur-xl border-r border-glass-border h-screen sticky top-0">
+            <aside className="hidden lg:flex flex-col w-64 p-4 bg-secondary/50 backdrop-blur-xl border-r border-glass-border h-screen sticky top-0">
                 <NavContent />
             </aside>
 
@@ -104,7 +171,7 @@ const DashboardLayout = ({ children }) => {
                 onClick={() => setMobileMenuOpen(true)}
                 className="lg:hidden fixed bottom-6 left-6 z-40 w-14 h-14 rounded-full bg-gradient-to-br from-accent-purple to-accent-cyan shadow-lg flex items-center justify-center"
             >
-                <Menu className="w-6 h-6 text-white" />
+                <span className="text-white text-2xl">☰</span>
             </button>
 
             {/* Mobile Sidebar */}
@@ -122,13 +189,13 @@ const DashboardLayout = ({ children }) => {
                             initial={{ x: -300 }}
                             animate={{ x: 0 }}
                             exit={{ x: -300 }}
-                            className="lg:hidden fixed left-0 top-0 bottom-0 w-72 p-6 bg-secondary border-r border-glass-border z-50 flex flex-col"
+                            className="lg:hidden fixed left-0 top-0 bottom-0 w-64 p-4 bg-secondary border-r border-glass-border z-50 flex flex-col"
                         >
                             <button
                                 onClick={() => setMobileMenuOpen(false)}
-                                className="absolute top-4 right-4 p-2 hover:bg-glass-hover rounded-lg"
+                                className="absolute top-4 right-4 p-2 hover:bg-glass-hover rounded-lg text-text-secondary hover:text-white"
                             >
-                                <X className="w-5 h-5" />
+                                ✕
                             </button>
                             <NavContent />
                         </motion.aside>

@@ -1,9 +1,5 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import {
-    Send, CheckCircle2, UserCheck, ArrowRight, ArrowLeft, CreditCard,
-    ChevronDown, AlertTriangle, Snowflake, Sparkles, Zap, Users, Clock
-} from 'lucide-react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { Link } from 'react-router-dom';
 import toast from 'react-hot-toast';
@@ -12,7 +8,7 @@ import GlowInput from '../../components/common/GlowInput';
 import NeonButton from '../../components/common/NeonButton';
 import api from '../../api';
 
-// Premium Card Selector Component
+// Card Selector - NO ICONS
 const CardSelector = ({ cards, selectedCard, onSelect }) => {
     const [isOpen, setIsOpen] = useState(false);
     const selected = cards?.find(c => c.number === selectedCard) || cards?.[0];
@@ -33,23 +29,23 @@ const CardSelector = ({ cards, selectedCard, onSelect }) => {
                     : selected?.type === 'Savings'
                         ? 'bg-gradient-to-br from-accent-purple to-accent-cyan'
                         : 'bg-gradient-to-br from-amber-500 to-orange-600'
-                    } shadow-lg flex items-center justify-center`}>
-                    <CreditCard className="w-5 h-5 text-white/80" />
+                    } shadow-lg flex items-center justify-center text-white text-xs font-bold`}>
+                    VISA
                 </div>
                 <div className="flex-1 text-left">
                     <p className="font-medium flex items-center gap-2">
                         {selected?.cardName || 'Card'}
                         {selected?.cardSettings?.isFrozen && (
-                            <span className="text-xs px-2 py-0.5 rounded-full bg-blue-500/20 text-blue-400 border border-blue-500/30 flex items-center gap-1">
-                                <Snowflake className="w-3 h-3" /> Frozen
+                            <span className="text-xs px-2 py-0.5 rounded-full bg-blue-500/20 text-blue-400 border border-blue-500/30">
+                                ❄️ Frozen
                             </span>
                         )}
                     </p>
                     <p className="text-sm text-text-muted">****{selected?.number?.slice(-4)} • {selected?.balance?.toLocaleString()} EGP available</p>
                 </div>
-                <motion.div animate={{ rotate: isOpen ? 180 : 0 }}>
-                    <ChevronDown className="w-5 h-5 text-text-muted" />
-                </motion.div>
+                <motion.span animate={{ rotate: isOpen ? 180 : 0 }} className="text-text-muted text-xl">
+                    ▼
+                </motion.span>
             </motion.button>
 
             <AnimatePresence>
@@ -71,22 +67,15 @@ const CardSelector = ({ cards, selectedCard, onSelect }) => {
                                     : card.type === 'Savings'
                                         ? 'bg-gradient-to-br from-accent-purple to-accent-cyan'
                                         : 'bg-gradient-to-br from-amber-500 to-orange-600'
-                                    } shadow-lg flex items-center justify-center`}>
-                                    <CreditCard className="w-5 h-5 text-white/80" />
+                                    } shadow-lg flex items-center justify-center text-white text-xs font-bold`}>
+                                    VISA
                                 </div>
                                 <div className="flex-1 text-left">
-                                    <p className="font-medium flex items-center gap-2">
-                                        {card.cardName}
-                                        {card.cardSettings?.isFrozen && (
-                                            <span className="text-xs px-2 py-0.5 rounded-full bg-blue-500/20 text-blue-400">Frozen</span>
-                                        )}
-                                    </p>
+                                    <p className="font-medium">{card.cardName}</p>
                                     <p className="text-sm text-text-muted">****{card.number.slice(-4)} • {card.balance.toLocaleString()} EGP</p>
                                 </div>
                                 {selectedCard === card.number && (
-                                    <div className="w-5 h-5 rounded-full bg-accent-cyan flex items-center justify-center">
-                                        <CheckCircle2 className="w-3 h-3 text-void" />
-                                    </div>
+                                    <div className="w-6 h-6 rounded-full bg-accent-cyan flex items-center justify-center text-void font-bold">✓</div>
                                 )}
                             </button>
                         ))}
@@ -97,7 +86,7 @@ const CardSelector = ({ cards, selectedCard, onSelect }) => {
     );
 };
 
-// Quick Amount Button
+// Quick Amount Button - NO ICONS
 const QuickAmount = ({ value, selected, onClick }) => (
     <motion.button
         whileHover={{ scale: 1.05, y: -2 }}
@@ -112,23 +101,20 @@ const QuickAmount = ({ value, selected, onClick }) => (
     </motion.button>
 );
 
-// Success Animation
-const SuccessScreen = ({ amount, recipient, onNewTransfer, onDone }) => (
+// Success Screen with Confetti - NO ICONS
+const SuccessScreen = ({ amount, recipient, onNewTransfer }) => (
     <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         className="text-center py-12"
     >
-        {/* Confetti-like particles */}
+        {/* Confetti particles */}
         <div className="relative">
             {[...Array(12)].map((_, i) => (
                 <motion.div
                     key={i}
-                    className={`absolute w-3 h-3 rounded-full ${['bg-accent-cyan', 'bg-accent-purple', 'bg-accent-pink', 'bg-status-success'][i % 4]
-                        }`}
-                    initial={{
-                        x: 0, y: 0, scale: 0, opacity: 1
-                    }}
+                    className={`absolute w-3 h-3 rounded-full ${['bg-accent-cyan', 'bg-accent-purple', 'bg-accent-pink', 'bg-status-success'][i % 4]}`}
+                    initial={{ x: 0, y: 0, scale: 0, opacity: 1 }}
                     animate={{
                         x: Math.cos(i * 30 * Math.PI / 180) * 100,
                         y: Math.sin(i * 30 * Math.PI / 180) * 100 - 50,
@@ -144,9 +130,9 @@ const SuccessScreen = ({ amount, recipient, onNewTransfer, onDone }) => (
                 initial={{ scale: 0, rotate: -180 }}
                 animate={{ scale: 1, rotate: 0 }}
                 transition={{ type: "spring", bounce: 0.5, delay: 0.1 }}
-                className="w-28 h-28 mx-auto mb-8 rounded-3xl bg-gradient-to-br from-emerald-400 to-green-500 flex items-center justify-center shadow-2xl shadow-green-500/40"
+                className="w-28 h-28 mx-auto mb-8 rounded-3xl bg-gradient-to-br from-emerald-400 to-green-500 flex items-center justify-center shadow-2xl shadow-green-500/40 text-5xl"
             >
-                <CheckCircle2 className="w-14 h-14 text-white" />
+                ✓
             </motion.div>
         </div>
 
@@ -178,7 +164,7 @@ const SuccessScreen = ({ amount, recipient, onNewTransfer, onDone }) => (
             className="flex gap-4 justify-center"
         >
             <NeonButton onClick={onNewTransfer}>
-                <Send className="w-4 h-4" /> New Transfer
+                Send Another →
             </NeonButton>
             <Link to="/dashboard">
                 <NeonButton variant="secondary">Back to Dashboard</NeonButton>
@@ -200,7 +186,6 @@ export default function Transfer() {
 
     const queryClient = useQueryClient();
 
-    // Fetch accounts/cards
     const { data: accounts } = useQuery({
         queryKey: ['accounts'],
         queryFn: async () => {
@@ -209,7 +194,6 @@ export default function Transfer() {
         }
     });
 
-    // Fetch beneficiaries for quick select
     const { data: beneficiaries } = useQuery({
         queryKey: ['beneficiaries'],
         queryFn: async () => {
@@ -218,19 +202,16 @@ export default function Transfer() {
         }
     });
 
-    // Set default account
     const selectedAccount = formData.fromAccount || accounts?.[0]?.number;
     const currentCard = accounts?.find(a => a.number === selectedAccount);
     const isCardFrozen = currentCard?.cardSettings?.isFrozen;
 
-    // Validation
     const isRecipientValid = formData.recipient.length >= 10;
     const isAmountValid = formData.amount && parseFloat(formData.amount) > 0;
     const hasEnoughBalance = currentCard && parseFloat(formData.amount || 0) <= currentCard.balance;
 
     const handleNext = () => {
         setError('');
-
         if (step === 1 && !isRecipientValid) {
             setError('Please enter a valid account number (min 10 digits)');
             return;
@@ -298,7 +279,7 @@ export default function Transfer() {
 
     return (
         <div className="max-w-2xl mx-auto space-y-8">
-            {/* Premium Header */}
+            {/* Header */}
             <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-cyan-500/20 via-secondary to-blue-500/20 border border-glass-border p-8">
                 <div className="absolute inset-0 overflow-hidden">
                     <motion.div
@@ -309,21 +290,10 @@ export default function Transfer() {
                 </div>
 
                 <div className="relative z-10">
-                    <div className="flex items-center gap-4 mb-2">
-                        <motion.div
-                            className="p-3 bg-gradient-to-br from-cyan-400 to-blue-500 rounded-2xl shadow-lg shadow-cyan-500/30"
-                            whileHover={{ rotate: [0, -10, 10, 0] }}
-                        >
-                            <Send className="w-8 h-8 text-white" />
-                        </motion.div>
-                        <div>
-                            <h1 className="text-3xl font-bold">Transfer Money</h1>
-                            <p className="text-text-secondary flex items-center gap-2">
-                                <Zap className="w-4 h-4 text-cyan-400" />
-                                Instant transfers, zero fees
-                            </p>
-                        </div>
-                    </div>
+                    <h1 className="text-3xl font-bold mb-2">Send Money</h1>
+                    <p className="text-text-secondary flex items-center gap-2">
+                        ⚡ Instant transfers, zero fees
+                    </p>
                 </div>
             </div>
 
@@ -336,23 +306,23 @@ export default function Transfer() {
                         exit={{ opacity: 0, y: -10, height: 0 }}
                         className="p-4 rounded-2xl bg-blue-500/10 border border-blue-500/30 flex items-start gap-3"
                     >
-                        <Snowflake className="w-5 h-5 text-blue-400 mt-0.5 animate-pulse" />
+                        <span className="text-2xl">❄️</span>
                         <div>
                             <p className="font-medium text-blue-400">Selected card is frozen</p>
                             <p className="text-sm text-text-muted">
-                                You cannot transfer from this card. <Link to="/cards" className="text-accent-cyan hover:underline">Unfreeze it in Card Controls</Link> or select a different card.
+                                You cannot transfer from this card. <Link to="/cards" className="text-accent-cyan hover:underline">Unfreeze it in My Cards</Link> or select a different card.
                             </p>
                         </div>
                     </motion.div>
                 )}
             </AnimatePresence>
 
-            {/* Progress Steps */}
+            {/* Progress Steps - NO ICONS, text only */}
             <div className="flex items-center gap-2">
                 {[
-                    { num: 1, label: 'Recipient', icon: Users },
-                    { num: 2, label: 'Amount', icon: CreditCard },
-                    { num: 3, label: 'Confirm', icon: CheckCircle2 }
+                    { num: 1, label: 'Recipient' },
+                    { num: 2, label: 'Amount' },
+                    { num: 3, label: 'Confirm' }
                 ].map((s, i) => (
                     <React.Fragment key={s.num}>
                         <motion.div
@@ -365,7 +335,7 @@ export default function Transfer() {
                                     : 'bg-glass-bg border border-glass-border text-text-muted'
                                     }`}
                             >
-                                {step > s.num ? <CheckCircle2 className="w-5 h-5" /> : <s.icon className="w-5 h-5" />}
+                                {step > s.num ? '✓' : s.num}
                             </motion.div>
                             <span className={`text-xs font-medium ${step >= s.num ? 'text-accent-cyan' : 'text-text-muted'}`}>{s.label}</span>
                         </motion.div>
@@ -383,10 +353,8 @@ export default function Transfer() {
             </div>
 
             <GlassCard className="relative overflow-hidden">
-                {/* Decorative gradient */}
                 <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-bl from-accent-cyan/10 to-transparent rounded-full blur-2xl" />
 
-                {/* Card Selector */}
                 {accounts && accounts.length > 1 && (
                     <CardSelector
                         cards={accounts}
@@ -407,7 +375,7 @@ export default function Transfer() {
                         >
                             <div>
                                 <h3 className="text-xl font-bold mb-1">Who are you sending to?</h3>
-                                <p className="text-text-muted text-sm">Enter account number or select from beneficiaries</p>
+                                <p className="text-text-muted text-sm">Enter account number or select from saved</p>
                             </div>
 
                             <GlowInput
@@ -415,17 +383,14 @@ export default function Transfer() {
                                 placeholder="Enter account number (min 10 digits)"
                                 value={formData.recipient}
                                 onChange={(e) => setFormData({ ...formData, recipient: e.target.value.replace(/\D/g, '') })}
-                                icon={UserCheck}
                                 error={formData.recipient && !isRecipientValid ? 'Min 10 digits required' : ''}
                                 autoFocus
                             />
 
-                            {/* Quick Select Beneficiaries */}
+                            {/* Quick Select Beneficiaries - initials only, NO icons */}
                             {beneficiaries && beneficiaries.length > 0 && (
                                 <div>
-                                    <p className="text-sm text-text-muted mb-3 flex items-center gap-2">
-                                        <Clock className="w-4 h-4" /> Quick Select
-                                    </p>
+                                    <p className="text-sm text-text-muted mb-3">📋 Quick Select</p>
                                     <div className="flex flex-wrap gap-2">
                                         {beneficiaries.slice(0, 4).map(b => (
                                             <motion.button
@@ -438,7 +403,7 @@ export default function Transfer() {
                                                     : 'bg-glass-bg border-glass-border hover:border-accent-cyan/50'
                                                     }`}
                                             >
-                                                <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-accent-purple to-accent-cyan flex items-center justify-center text-xs font-bold">
+                                                <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-accent-purple to-accent-cyan flex items-center justify-center text-xs font-bold text-white">
                                                     {b.name.split(' ').map(n => n[0]).join('')}
                                                 </div>
                                                 <span className="text-sm font-medium">{b.nickname || b.name}</span>
@@ -451,7 +416,7 @@ export default function Transfer() {
                             {error && <p className="text-status-error text-sm">{error}</p>}
 
                             <NeonButton onClick={handleNext} className="w-full" disabled={!isRecipientValid || isCardFrozen}>
-                                Continue <ArrowRight className="w-4 h-4" />
+                                Continue →
                             </NeonButton>
                         </motion.div>
                     )}
@@ -501,18 +466,17 @@ export default function Transfer() {
 
                             {error && <p className="text-status-error text-center">{error}</p>}
                             {!hasEnoughBalance && formData.amount && (
-                                <p className="text-status-warning text-center text-sm flex items-center justify-center gap-2">
-                                    <AlertTriangle className="w-4 h-4" />
-                                    Amount exceeds available balance
+                                <p className="text-status-warning text-center text-sm">
+                                    ⚠️ Amount exceeds available balance
                                 </p>
                             )}
 
                             <div className="flex gap-4">
                                 <NeonButton variant="secondary" onClick={() => setStep(1)} className="flex-1">
-                                    <ArrowLeft className="w-4 h-4" /> Back
+                                    ← Back
                                 </NeonButton>
                                 <NeonButton onClick={handleNext} className="flex-1" disabled={!isAmountValid || !hasEnoughBalance || isCardFrozen}>
-                                    Review <ArrowRight className="w-4 h-4" />
+                                    Review →
                                 </NeonButton>
                             </div>
                         </motion.div>
@@ -530,6 +494,29 @@ export default function Transfer() {
                             <div>
                                 <h3 className="text-xl font-bold mb-1">Review & Confirm</h3>
                                 <p className="text-text-muted text-sm">Please verify the details before confirming</p>
+                            </div>
+
+                            {/* Transfer visualization */}
+                            <div className="flex items-center justify-center gap-4 py-6">
+                                <div className="text-center">
+                                    <div className="w-16 h-10 rounded-lg bg-gradient-to-br from-amber-500 to-orange-600 mx-auto mb-2 flex items-center justify-center text-white text-xs font-bold">
+                                        VISA
+                                    </div>
+                                    <p className="text-xs text-text-muted">Your Card</p>
+                                </div>
+                                <motion.div
+                                    className="text-2xl text-accent-cyan"
+                                    animate={{ x: [0, 10, 0] }}
+                                    transition={{ duration: 1, repeat: Infinity }}
+                                >
+                                    →→→
+                                </motion.div>
+                                <div className="text-center">
+                                    <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-accent-purple to-accent-cyan mx-auto mb-2 flex items-center justify-center text-white font-bold">
+                                        {formData.recipient.slice(-2)}
+                                    </div>
+                                    <p className="text-xs text-text-muted">Recipient</p>
+                                </div>
                             </div>
 
                             <div className="bg-gradient-to-br from-glass-bg to-transparent border border-glass-border rounded-2xl p-6 space-y-4">
@@ -564,17 +551,17 @@ export default function Transfer() {
 
                             {error && (
                                 <div className="p-4 rounded-xl bg-status-error/10 border border-status-error/30 flex items-center gap-3">
-                                    <AlertTriangle className="w-5 h-5 text-status-error" />
+                                    <span className="text-xl">⚠️</span>
                                     <p className="text-status-error">{error}</p>
                                 </div>
                             )}
 
                             <div className="flex gap-4">
                                 <NeonButton variant="secondary" onClick={() => setStep(2)} className="flex-1">
-                                    <ArrowLeft className="w-4 h-4" /> Back
+                                    ← Back
                                 </NeonButton>
                                 <NeonButton onClick={handleSubmit} loading={loading} className="flex-1" disabled={isCardFrozen}>
-                                    <Send className="w-4 h-4" /> Confirm Transfer
+                                    ✓ Confirm & Send
                                 </NeonButton>
                             </div>
                         </motion.div>

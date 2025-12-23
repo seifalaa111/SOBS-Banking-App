@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Target, Plus, X, Sparkles, TrendingUp, Wallet, PiggyBank, Car, Plane, Home, GraduationCap, Heart, Gift } from 'lucide-react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import GlassCard from '../../components/common/GlassCard';
 import NeonButton from '../../components/common/NeonButton';
@@ -8,17 +7,19 @@ import GlowInput from '../../components/common/GlowInput';
 import Skeleton from '../../components/common/Skeleton';
 import api from '../../api';
 
+// Goal types with emojis instead of icons
 const GOAL_ICONS = [
-    { id: 'vacation', icon: Plane, label: 'Vacation', color: 'from-blue-400 to-cyan-500' },
-    { id: 'car', icon: Car, label: 'Car', color: 'from-purple-400 to-pink-500' },
-    { id: 'home', icon: Home, label: 'Home', color: 'from-amber-400 to-orange-500' },
-    { id: 'education', icon: GraduationCap, label: 'Education', color: 'from-green-400 to-emerald-500' },
-    { id: 'emergency', icon: Heart, label: 'Emergency', color: 'from-red-400 to-rose-500' },
-    { id: 'gift', icon: Gift, label: 'Gift', color: 'from-pink-400 to-purple-500' },
-    { id: 'savings', icon: PiggyBank, label: 'General', color: 'from-yellow-400 to-amber-500' },
-    { id: 'other', icon: Target, label: 'Other', color: 'from-gray-400 to-gray-600' },
+    { id: 'vacation', label: 'Vacation', color: 'from-blue-400 to-cyan-500', emoji: '🏖️' },
+    { id: 'car', label: 'Car', color: 'from-purple-400 to-pink-500', emoji: '🚗' },
+    { id: 'home', label: 'Home', color: 'from-amber-400 to-orange-500', emoji: '🏠' },
+    { id: 'education', label: 'Education', color: 'from-green-400 to-emerald-500', emoji: '🎓' },
+    { id: 'emergency', label: 'Emergency', color: 'from-red-400 to-rose-500', emoji: '🏥' },
+    { id: 'gift', label: 'Gift', color: 'from-pink-400 to-purple-500', emoji: '🎁' },
+    { id: 'savings', label: 'General', color: 'from-yellow-400 to-amber-500', emoji: '🐷' },
+    { id: 'other', label: 'Other', color: 'from-gray-400 to-gray-600', emoji: '🎯' },
 ];
 
+// Create Goal Modal - NO ICONS
 const CreateGoalModal = ({ isOpen, onClose, onSuccess }) => {
     const [name, setName] = useState('');
     const [targetAmount, setTargetAmount] = useState('');
@@ -52,12 +53,8 @@ const CreateGoalModal = ({ isOpen, onClose, onSuccess }) => {
                 className="bg-gradient-to-b from-tertiary to-secondary border border-glass-border rounded-3xl p-8 w-full max-w-lg"
             >
                 <div className="flex justify-between items-center mb-6">
-                    <h3 className="text-2xl font-bold flex items-center gap-2">
-                        <Sparkles className="w-6 h-6 text-accent-cyan" /> Create Savings Goal
-                    </h3>
-                    <button onClick={onClose} className="p-2 hover:bg-glass-hover rounded-lg transition-colors">
-                        <X className="w-5 h-5" />
-                    </button>
+                    <h3 className="text-2xl font-bold">✨ Create Savings Goal</h3>
+                    <button onClick={onClose} className="p-2 hover:bg-glass-hover rounded-lg transition-colors text-xl">✕</button>
                 </div>
 
                 <div className="space-y-6">
@@ -84,13 +81,11 @@ const CreateGoalModal = ({ isOpen, onClose, onSuccess }) => {
                                     key={item.id}
                                     onClick={() => setSelectedIcon(item.id)}
                                     className={`p-4 rounded-xl border transition-all flex flex-col items-center gap-2 ${selectedIcon === item.id
-                                            ? 'border-accent-cyan bg-accent-cyan/10'
-                                            : 'border-glass-border hover:border-glass-hover'
+                                        ? 'border-accent-cyan bg-accent-cyan/10'
+                                        : 'border-glass-border hover:border-glass-hover'
                                         }`}
                                 >
-                                    <div className={`w-10 h-10 rounded-lg bg-gradient-to-br ${item.color} flex items-center justify-center`}>
-                                        <item.icon className="w-5 h-5 text-white" />
-                                    </div>
+                                    <span className="text-2xl">{item.emoji}</span>
                                     <span className="text-xs text-text-muted">{item.label}</span>
                                 </button>
                             ))}
@@ -106,6 +101,7 @@ const CreateGoalModal = ({ isOpen, onClose, onSuccess }) => {
     );
 };
 
+// Add Money Modal - NO ICONS
 const AddMoneyToGoalModal = ({ isOpen, onClose, goal, onSuccess }) => {
     const [amount, setAmount] = useState('');
     const [loading, setLoading] = useState(false);
@@ -138,12 +134,12 @@ const AddMoneyToGoalModal = ({ isOpen, onClose, goal, onSuccess }) => {
             >
                 <div className="flex justify-between items-center mb-6">
                     <h3 className="text-xl font-bold">Add to {goal.name}</h3>
-                    <button onClick={onClose} className="p-2 hover:bg-glass-hover rounded-lg"><X className="w-5 h-5" /></button>
+                    <button onClick={onClose} className="p-2 hover:bg-glass-hover rounded-lg text-xl">✕</button>
                 </div>
 
                 <div className="text-center mb-6">
-                    <div className={`w-16 h-16 rounded-2xl bg-gradient-to-br ${iconData.color} flex items-center justify-center mx-auto mb-4`}>
-                        <iconData.icon className="w-8 h-8 text-white" />
+                    <div className={`w-16 h-16 rounded-2xl bg-gradient-to-br ${iconData.color} flex items-center justify-center mx-auto mb-4 text-3xl`}>
+                        {iconData.emoji}
                     </div>
                     <p className="text-text-muted">Remaining: <span className="text-accent-cyan font-bold">{remaining.toLocaleString()} EGP</span></p>
                 </div>
@@ -173,6 +169,32 @@ const AddMoneyToGoalModal = ({ isOpen, onClose, goal, onSuccess }) => {
     );
 };
 
+// Liquid Fill Progress - visual "water tank" style progress
+const LiquidProgress = ({ progress, color }) => (
+    <div className="relative w-full h-32 bg-glass-bg rounded-2xl overflow-hidden border border-glass-border">
+        <motion.div
+            className={`absolute bottom-0 left-0 right-0 bg-gradient-to-t ${color}`}
+            initial={{ height: 0 }}
+            animate={{ height: `${Math.min(progress, 100)}%` }}
+            transition={{ duration: 1.5, ease: "easeOut" }}
+        />
+        <motion.div
+            className="absolute inset-0 opacity-30"
+            animate={{
+                backgroundPosition: ['0% 0%', '100% 100%'],
+            }}
+            transition={{ duration: 3, repeat: Infinity, repeatType: 'reverse' }}
+            style={{
+                background: 'linear-gradient(45deg, transparent 40%, rgba(255,255,255,0.3) 50%, transparent 60%)',
+                backgroundSize: '200% 200%',
+            }}
+        />
+        <div className="absolute inset-0 flex items-center justify-center">
+            <span className="text-2xl font-bold text-white drop-shadow-lg">{Math.round(progress)}%</span>
+        </div>
+    </div>
+);
+
 export default function SavingsGoals() {
     const [showCreate, setShowCreate] = useState(false);
     const [selectedGoal, setSelectedGoal] = useState(null);
@@ -195,26 +217,24 @@ export default function SavingsGoals() {
             <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
                 <div>
                     <h1 className="text-3xl font-bold flex items-center gap-3">
-                        <div className="p-3 bg-gradient-to-br from-yellow-400 to-amber-500 rounded-2xl shadow-lg shadow-amber-500/20">
-                            <PiggyBank className="w-7 h-7 text-white" />
-                        </div>
+                        <span className="text-3xl">🐷</span>
                         <span className="bg-clip-text text-transparent bg-gradient-to-r from-white to-text-secondary">
                             Savings Goals
                         </span>
                     </h1>
-                    <p className="text-text-secondary mt-2 ml-16">Track your progress towards your dreams</p>
+                    <p className="text-text-secondary mt-2 ml-12">Track your progress towards your dreams</p>
                 </div>
                 <NeonButton onClick={() => setShowCreate(true)}>
-                    <Plus className="w-5 h-5" /> Create Goal
+                    + Create Goal
                 </NeonButton>
             </div>
 
-            {/* Summary Cards */}
+            {/* Summary Cards - NO ICONS, use emojis */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <GlassCard className="bg-gradient-to-br from-status-success/10 to-transparent border-status-success/30">
                     <div className="flex items-center gap-4">
-                        <div className="w-12 h-12 rounded-xl bg-status-success/20 flex items-center justify-center">
-                            <Wallet className="w-6 h-6 text-status-success" />
+                        <div className="w-12 h-12 rounded-xl bg-status-success/20 flex items-center justify-center text-2xl">
+                            💰
                         </div>
                         <div>
                             <p className="text-sm text-text-muted">Total Saved</p>
@@ -225,8 +245,8 @@ export default function SavingsGoals() {
 
                 <GlassCard className="bg-gradient-to-br from-accent-cyan/10 to-transparent border-accent-cyan/30">
                     <div className="flex items-center gap-4">
-                        <div className="w-12 h-12 rounded-xl bg-accent-cyan/20 flex items-center justify-center">
-                            <Target className="w-6 h-6 text-accent-cyan" />
+                        <div className="w-12 h-12 rounded-xl bg-accent-cyan/20 flex items-center justify-center text-2xl">
+                            🎯
                         </div>
                         <div>
                             <p className="text-sm text-text-muted">Total Target</p>
@@ -237,8 +257,8 @@ export default function SavingsGoals() {
 
                 <GlassCard className="bg-gradient-to-br from-accent-purple/10 to-transparent border-accent-purple/30">
                     <div className="flex items-center gap-4">
-                        <div className="w-12 h-12 rounded-xl bg-accent-purple/20 flex items-center justify-center">
-                            <TrendingUp className="w-6 h-6 text-accent-purple" />
+                        <div className="w-12 h-12 rounded-xl bg-accent-purple/20 flex items-center justify-center text-2xl">
+                            📈
                         </div>
                         <div>
                             <p className="text-sm text-text-muted">Overall Progress</p>
@@ -257,11 +277,11 @@ export default function SavingsGoals() {
                 </div>
             ) : !goals || goals.length === 0 ? (
                 <GlassCard className="text-center py-16">
-                    <PiggyBank className="w-16 h-16 mx-auto mb-4 text-text-muted opacity-50" />
+                    <span className="text-6xl block mb-4">🐷</span>
                     <h3 className="text-xl font-semibold text-white mb-2">No savings goals yet</h3>
                     <p className="text-text-muted mb-6">Start saving towards your dreams!</p>
                     <NeonButton onClick={() => setShowCreate(true)}>
-                        <Plus className="w-5 h-5" /> Create Your First Goal
+                        + Create Your First Goal
                     </NeonButton>
                 </GlassCard>
             ) : (
@@ -280,14 +300,14 @@ export default function SavingsGoals() {
                             >
                                 <GlassCard className={`relative overflow-hidden group hover:border-accent-cyan/50 transition-all ${isComplete ? 'border-status-success/50' : ''}`}>
                                     {isComplete && (
-                                        <div className="absolute top-3 right-3 px-2 py-1 rounded-full bg-status-success/20 text-status-success text-xs font-medium border border-status-success/30 flex items-center gap-1">
-                                            <Sparkles className="w-3 h-3" /> Complete!
+                                        <div className="absolute top-3 right-3 px-2 py-1 rounded-full bg-status-success/20 text-status-success text-xs font-medium border border-status-success/30">
+                                            ✨ Complete!
                                         </div>
                                     )}
 
                                     <div className="flex items-start gap-4 mb-4">
-                                        <div className={`w-14 h-14 rounded-2xl bg-gradient-to-br ${iconData.color} flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform`}>
-                                            <iconData.icon className="w-7 h-7 text-white" />
+                                        <div className={`w-14 h-14 rounded-2xl bg-gradient-to-br ${iconData.color} flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform text-2xl`}>
+                                            {iconData.emoji}
                                         </div>
                                         <div className="flex-1">
                                             <h3 className="text-lg font-bold text-white">{goal.name}</h3>
@@ -295,30 +315,22 @@ export default function SavingsGoals() {
                                         </div>
                                     </div>
 
-                                    {/* Progress Bar */}
-                                    <div className="mb-4">
-                                        <div className="flex justify-between text-sm mb-2">
-                                            <span className="text-accent-cyan font-mono font-bold">{goal.currentAmount.toLocaleString()}</span>
-                                            <span className="text-text-muted">of {goal.targetAmount.toLocaleString()} EGP</span>
-                                        </div>
-                                        <div className="h-3 bg-glass-bg rounded-full overflow-hidden">
-                                            <motion.div
-                                                className={`h-full rounded-full ${isComplete ? 'bg-gradient-to-r from-status-success to-emerald-400' : 'bg-gradient-to-r from-accent-cyan to-accent-purple'}`}
-                                                initial={{ width: 0 }}
-                                                animate={{ width: `${progress}%` }}
-                                                transition={{ duration: 1, delay: i * 0.1 }}
-                                            />
-                                        </div>
-                                        <p className="text-right text-sm text-text-muted mt-1">{Math.round(progress)}%</p>
+                                    {/* Liquid Fill Progress */}
+                                    <LiquidProgress progress={progress} color={isComplete ? 'from-status-success to-emerald-400' : iconData.color} />
+
+                                    {/* Stats */}
+                                    <div className="mt-4 flex justify-between items-center text-sm">
+                                        <span className="text-accent-cyan font-mono font-bold">{goal.currentAmount.toLocaleString()}</span>
+                                        <span className="text-text-muted">of {goal.targetAmount.toLocaleString()} EGP</span>
                                     </div>
 
                                     {!isComplete && (
                                         <NeonButton
                                             variant="secondary"
-                                            className="w-full"
+                                            className="w-full mt-4"
                                             onClick={() => setSelectedGoal(goal)}
                                         >
-                                            <Plus className="w-4 h-4" /> Add Money
+                                            + Add Money
                                         </NeonButton>
                                     )}
                                 </GlassCard>
@@ -334,7 +346,7 @@ export default function SavingsGoals() {
                         onClick={() => setShowCreate(true)}
                         className="border-2 border-dashed border-glass-border rounded-2xl p-8 flex flex-col items-center justify-center text-text-muted hover:border-accent-cyan hover:text-accent-cyan transition-all cursor-pointer min-h-[280px] group"
                     >
-                        <Plus className="w-12 h-12 mb-4 group-hover:scale-110 transition-transform" />
+                        <span className="text-5xl mb-4 group-hover:scale-110 transition-transform">+</span>
                         <span className="font-medium">Create New Goal</span>
                     </motion.div>
                 </div>

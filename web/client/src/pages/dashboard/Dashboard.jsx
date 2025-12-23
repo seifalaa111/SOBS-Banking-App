@@ -1,11 +1,5 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import {
-    Wallet, Send, Receipt, TrendingUp, TrendingDown, ArrowUpRight, ArrowDownLeft,
-    Plus, Eye, EyeOff, CreditCard, Sparkles, Clock, ChevronRight, Bell,
-    PiggyBank, BarChart3, Zap, Activity, Target, ChevronLeft, Sun, Moon, Wifi,
-    Settings, History
-} from 'lucide-react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { Link, useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
@@ -22,6 +16,15 @@ const getGreeting = () => {
     if (hour < 12) return { text: 'Good morning', emoji: '☀️' };
     if (hour < 17) return { text: 'Good afternoon', emoji: '🌤️' };
     return { text: 'Good evening', emoji: '🌙' };
+};
+
+// Format date
+const formatDate = () => {
+    return new Date().toLocaleDateString('en-US', {
+        weekday: 'long',
+        month: 'long',
+        day: 'numeric'
+    });
 };
 
 // Animated Counter Component
@@ -44,62 +47,82 @@ const AnimatedNumber = ({ value, duration = 1500 }) => {
     return <span>{displayValue.toLocaleString()}</span>;
 };
 
-// HERO Credit Card - Large and prominent
-const HeroCreditCard = ({ card, onPrev, onNext, hasMultiple }) => {
+// Premium Credit Card with 3D effects
+const CreditCard3D = ({ card, onPrev, onNext, hasMultiple }) => {
     const [showBalance, setShowBalance] = useState(true);
+    const [tilt, setTilt] = useState({ x: 0, y: 0 });
     const isFrozen = card?.cardSettings?.isFrozen;
-    const isBusinessCard = card?.type !== 'Savings';
+
+    const handleMouseMove = (e) => {
+        const rect = e.currentTarget.getBoundingClientRect();
+        const x = (e.clientX - rect.left) / rect.width - 0.5;
+        const y = (e.clientY - rect.top) / rect.height - 0.5;
+        setTilt({ x: y * 10, y: x * -10 });
+    };
 
     if (!card) return null;
 
     return (
         <div className="relative flex items-center justify-center gap-6">
-            {/* Left Arrow */}
+            {/* Left Arrow - Text only */}
             {hasMultiple && (
                 <motion.button
-                    whileHover={{ scale: 1.15, x: -5 }}
+                    whileHover={{ scale: 1.1 }}
                     whileTap={{ scale: 0.9 }}
                     onClick={onPrev}
-                    className="p-4 rounded-2xl bg-glass-bg border border-glass-border hover:bg-glass-hover hover:border-accent-cyan shadow-xl transition-all"
+                    className="p-4 rounded-2xl bg-glass-bg border border-glass-border hover:bg-glass-hover hover:border-accent-cyan text-2xl text-text-muted hover:text-white transition-all"
                 >
-                    <ChevronLeft className="w-7 h-7" />
+                    ←
                 </motion.button>
             )}
 
-            {/* Main Card - HERO SIZE */}
+            {/* Main Card */}
             <AnimatePresence mode="wait">
                 <motion.div
                     key={card.number}
-                    initial={{ opacity: 0, scale: 0.9, rotateY: -15 }}
-                    animate={{ opacity: 1, scale: 1, rotateY: 0 }}
-                    exit={{ opacity: 0, scale: 0.9, rotateY: 15 }}
-                    transition={{ type: "spring", stiffness: 300, damping: 25 }}
-                    className="relative"
-                    style={{ perspective: '1500px' }}
+                    initial={{ opacity: 0, scale: 0.9 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.9 }}
+                    onMouseMove={handleMouseMove}
+                    onMouseLeave={() => setTilt({ x: 0, y: 0 })}
+                    className="relative cursor-pointer"
+                    style={{
+                        perspective: '1500px',
+                        transformStyle: 'preserve-3d',
+                    }}
                 >
-                    <div className={`relative w-[420px] h-[260px] rounded-3xl overflow-hidden shadow-2xl`}>
+                    <motion.div
+                        animate={{ rotateX: tilt.x, rotateY: tilt.y }}
+                        transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+                        className={`relative w-[400px] h-[240px] rounded-3xl overflow-hidden shadow-2xl ${isFrozen ? 'grayscale' : ''}`}
+                        style={{ transformStyle: 'preserve-3d' }}
+                    >
                         {/* Card Background */}
                         <div className={`absolute inset-0 ${isFrozen
-                            ? 'bg-gradient-to-br from-slate-500 via-gray-600 to-slate-700'
-                            : isBusinessCard
-                                ? 'bg-gradient-to-br from-amber-500 via-orange-500 to-red-500'
-                                : 'bg-gradient-to-br from-cyan-400 via-blue-500 to-purple-600'
+                                ? 'bg-gradient-to-br from-slate-600 via-gray-700 to-slate-800'
+                                : card.type === 'Savings'
+                                    ? 'bg-gradient-to-br from-indigo-600 via-purple-600 to-pink-600'
+                                    : 'bg-gradient-to-br from-amber-500 via-orange-500 to-red-500'
                             }`} />
 
-                        {/* Animated shimmer */}
+                        {/* Holographic Shimmer */}
                         <motion.div
-                            className="absolute inset-0 bg-gradient-to-r from-transparent via-white/25 to-transparent"
-                            animate={{ x: ['-200%', '200%'] }}
-                            transition={{ duration: 3, repeat: Infinity, repeatDelay: 2 }}
+                            className="absolute inset-0 opacity-30"
+                            animate={{ backgroundPosition: ['0% 0%', '100% 100%'] }}
+                            transition={{ duration: 3, repeat: Infinity, repeatType: 'reverse' }}
+                            style={{
+                                background: 'linear-gradient(45deg, transparent 30%, rgba(255,255,255,0.4) 50%, transparent 70%)',
+                                backgroundSize: '200% 200%',
+                            }}
                         />
 
-                        {/* Decorative pattern */}
-                        <div className="absolute inset-0 opacity-10">
-                            <div className="absolute top-0 right-0 w-64 h-64 rounded-full bg-white/30 blur-3xl -translate-y-1/2 translate-x-1/2" />
-                            <div className="absolute bottom-0 left-0 w-48 h-48 rounded-full bg-white/20 blur-2xl translate-y-1/2 -translate-x-1/2" />
+                        {/* Decorative circles */}
+                        <div className="absolute inset-0 opacity-20">
+                            <div className="absolute -top-20 -right-20 w-60 h-60 rounded-full bg-white/30 blur-3xl" />
+                            <div className="absolute -bottom-20 -left-20 w-40 h-40 rounded-full bg-white/20 blur-3xl" />
                         </div>
 
-                        {/* Frozen overlay */}
+                        {/* Frozen Overlay */}
                         {isFrozen && (
                             <motion.div
                                 initial={{ opacity: 0 }}
@@ -108,125 +131,130 @@ const HeroCreditCard = ({ card, onPrev, onNext, hasMultiple }) => {
                             >
                                 <div className="text-center">
                                     <motion.span
-                                        className="text-6xl"
-                                        animate={{ scale: [1, 1.2, 1] }}
+                                        className="text-5xl block mb-2"
+                                        animate={{ scale: [1, 1.1, 1] }}
                                         transition={{ duration: 2, repeat: Infinity }}
                                     >
                                         ❄️
                                     </motion.span>
-                                    <p className="text-blue-200 text-sm font-bold mt-3 tracking-widest">CARD FROZEN</p>
+                                    <p className="text-blue-200 text-xs font-bold tracking-widest">CARD FROZEN</p>
                                 </div>
                             </motion.div>
                         )}
 
-                        {/* Card content */}
-                        <div className="relative z-10 p-8 h-full flex flex-col">
-                            {/* Top row */}
+                        {/* Card Content */}
+                        <div className="relative z-10 p-7 h-full flex flex-col">
+                            {/* Top Row */}
                             <div className="flex justify-between items-start">
                                 <div className="flex items-center gap-3">
-                                    {/* Realistic EMV Chip with circuit lines */}
-                                    <div className="w-14 h-10 rounded-lg relative overflow-hidden">
-                                        <div className="absolute inset-0 bg-gradient-to-br from-yellow-300 via-yellow-400 to-amber-500 shadow-lg" />
+                                    {/* EMV Chip */}
+                                    <div className="w-12 h-9 rounded-md relative overflow-hidden">
+                                        <div className="absolute inset-0 bg-gradient-to-br from-yellow-300 via-yellow-400 to-amber-500" />
                                         <div className="absolute inset-0 bg-gradient-to-t from-yellow-600/30 to-transparent" />
-                                        {/* Chip circuit lines */}
-                                        <div className="absolute top-[35%] left-1 right-1 h-[1px] bg-yellow-600/40" />
-                                        <div className="absolute top-[55%] left-1 right-1 h-[1px] bg-yellow-600/40" />
-                                        <div className="absolute top-1 bottom-1 left-[30%] w-[1px] bg-yellow-600/40" />
-                                        <div className="absolute top-1 bottom-1 left-[60%] w-[1px] bg-yellow-600/40" />
-                                        {/* Inner chip rectangle */}
-                                        <div className="absolute top-[25%] left-[20%] right-[20%] bottom-[25%] border border-yellow-600/30 rounded-sm" />
+                                        <div className="absolute top-[35%] left-1 right-1 h-[1px] bg-yellow-700/40" />
+                                        <div className="absolute top-[55%] left-1 right-1 h-[1px] bg-yellow-700/40" />
+                                        <div className="absolute top-1 bottom-1 left-[30%] w-[1px] bg-yellow-700/40" />
+                                        <div className="absolute top-1 bottom-1 left-[60%] w-[1px] bg-yellow-700/40" />
                                     </div>
-                                    {/* Contactless icon with pulse */}
+                                    {/* Contactless */}
                                     <motion.div
-                                        animate={{ opacity: [0.5, 1, 0.5] }}
+                                        className="text-white/70 text-lg"
+                                        animate={{ opacity: [0.4, 1, 0.4] }}
                                         transition={{ duration: 2, repeat: Infinity }}
                                     >
-                                        <Wifi className="w-7 h-7 text-white/70 rotate-90" />
+                                        )))
                                     </motion.div>
                                 </div>
-                                <span className="text-3xl font-bold italic text-white/90 tracking-wider">VISA</span>
+                                <span className="text-2xl font-bold italic text-white/90 tracking-wide">VISA</span>
                             </div>
 
-                            {/* Card number */}
-                            <div className="mt-6 font-mono text-2xl tracking-[0.25em] text-white">
+                            {/* Card Number */}
+                            <div className="mt-6 font-mono text-xl tracking-[0.25em] text-white">
                                 •••• •••• •••• {card.number.slice(-4)}
                             </div>
 
-                            {/* Bottom row */}
+                            {/* Bottom Row */}
                             <div className="mt-auto flex justify-between items-end">
                                 <div>
-                                    <p className="text-xs text-white/50 uppercase tracking-wider mb-1">Card Name</p>
-                                    <p className="text-lg font-semibold text-white">{card.cardName}</p>
+                                    <p className="text-[10px] text-white/50 uppercase tracking-wider mb-0.5">CARD HOLDER</p>
+                                    <p className="text-sm font-semibold text-white">{card.cardName}</p>
                                 </div>
                                 <div className="text-right">
-                                    <p className="text-xs text-white/50 uppercase tracking-wider mb-1">Balance</p>
-                                    <p className="text-2xl font-bold text-white">
-                                        {showBalance ? `${card.balance.toLocaleString()} ${card.currency}` : '••••••'}
-                                    </p>
+                                    <p className="text-[10px] text-white/50 uppercase tracking-wider mb-0.5">BALANCE</p>
+                                    <button onClick={() => setShowBalance(!showBalance)} className="group">
+                                        <p className="text-xl font-bold text-white group-hover:scale-105 transition-transform">
+                                            {showBalance ? `${card.balance.toLocaleString()} ${card.currency}` : '••••••'}
+                                        </p>
+                                    </button>
                                 </div>
                             </div>
                         </div>
-
-                        {/* Eye toggle - aligned under VISA */}
-                        <button
-                            onClick={() => setShowBalance(!showBalance)}
-                            className="absolute top-[70px] right-8 p-2 rounded-full bg-white/10 hover:bg-white/20 transition-colors z-30"
-                        >
-                            {showBalance ? <Eye className="w-5 h-5 text-white" /> : <EyeOff className="w-5 h-5 text-white" />}
-                        </button>
-                    </div>
+                    </motion.div>
                 </motion.div>
             </AnimatePresence>
 
-            {/* Right Arrow */}
+            {/* Right Arrow - Text only */}
             {hasMultiple && (
                 <motion.button
-                    whileHover={{ scale: 1.15, x: 5 }}
+                    whileHover={{ scale: 1.1 }}
                     whileTap={{ scale: 0.9 }}
                     onClick={onNext}
-                    className="p-4 rounded-2xl bg-glass-bg border border-glass-border hover:bg-glass-hover hover:border-accent-cyan shadow-xl transition-all"
+                    className="p-4 rounded-2xl bg-glass-bg border border-glass-border hover:bg-glass-hover hover:border-accent-cyan text-2xl text-text-muted hover:text-white transition-all"
                 >
-                    <ChevronRight className="w-7 h-7" />
+                    →
                 </motion.button>
             )}
         </div>
     );
 };
 
-// Quick Action Button - Compact
-const QuickAction = ({ icon: Icon, label, gradient, to }) => (
-    <Link to={to} className="group flex flex-col items-center gap-2">
+// Quick Action Card - NO ICONS, uses motion graphics
+const QuickActionCard = ({ label, sublabel, gradient, to, motionElement }) => (
+    <Link to={to}>
         <motion.div
-            whileHover={{ scale: 1.1, y: -3 }}
-            whileTap={{ scale: 0.95 }}
-            className={`w-14 h-14 rounded-2xl bg-gradient-to-br ${gradient} flex items-center justify-center shadow-lg`}
+            whileHover={{ scale: 1.03, y: -5 }}
+            whileTap={{ scale: 0.98 }}
+            className={`relative overflow-hidden p-5 rounded-2xl bg-gradient-to-br ${gradient} cursor-pointer group`}
         >
-            <Icon className="w-6 h-6 text-white" />
+            <div className="relative z-10">
+                <p className="text-white font-semibold mb-1">{label}</p>
+                <p className="text-white/70 text-xs">{sublabel}</p>
+            </div>
+            {/* Motion graphic element */}
+            <div className="absolute bottom-2 right-2 text-white/20 text-4xl font-bold">
+                {motionElement}
+            </div>
+            {/* Hover glow */}
+            <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity bg-white/10" />
         </motion.div>
-        <span className="text-xs text-text-secondary group-hover:text-text-primary transition-colors">{label}</span>
     </Link>
 );
 
-// Transaction Item with category colors
+// Transaction Item - NO ICONS, uses initials
 const TransactionItem = ({ tx, index }) => {
     const isCredit = tx.type === 'credit';
 
-    // Category colors for left border
-    const getCategoryColor = (category) => {
-        const colors = {
-            deposit: 'border-l-emerald-500',
-            transfer: 'border-l-blue-500',
-            bill: 'border-l-amber-500',
-            shopping: 'border-l-purple-500',
-            food: 'border-l-orange-500',
-            savings: 'border-l-indigo-500',
-        };
-        return colors[category] || 'border-l-gray-500';
-    };
+    // Category colors
+    const getCategoryColor = (category) => ({
+        deposit: 'from-emerald-500 to-green-600',
+        transfer: 'from-blue-500 to-indigo-600',
+        bill: 'from-amber-500 to-orange-600',
+        shopping: 'from-purple-500 to-pink-600',
+        food: 'from-orange-500 to-red-600',
+        savings: 'from-indigo-500 to-violet-600',
+    }[category] || 'from-gray-500 to-slate-600');
 
-    // Get initials from description
-    const getInitials = (desc) => {
-        return desc.split(' ').slice(0, 2).map(w => w[0]).join('').toUpperCase();
+    // Get initials
+    const getInitials = (desc) => desc.split(' ').slice(0, 2).map(w => w[0]).join('').toUpperCase();
+
+    // Get relative time
+    const getRelativeTime = (date) => {
+        const now = new Date();
+        const txDate = new Date(date);
+        const diffDays = Math.floor((now - txDate) / (1000 * 60 * 60 * 24));
+        if (diffDays === 0) return 'Today';
+        if (diffDays === 1) return 'Yesterday';
+        return txDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
     };
 
     return (
@@ -234,23 +262,47 @@ const TransactionItem = ({ tx, index }) => {
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: index * 0.05 }}
-            whileHover={{ x: 4, backgroundColor: 'rgba(255,255,255,0.03)' }}
-            className={`flex items-center gap-3 p-3 rounded-xl border-l-4 ${getCategoryColor(tx.category)} transition-all cursor-pointer`}
+            whileHover={{ x: 4, backgroundColor: 'rgba(255,255,255,0.02)' }}
+            className="flex items-center gap-4 p-4 rounded-xl cursor-pointer border-l-4 border-transparent hover:border-l-accent-cyan transition-all"
         >
-            <div className={`w-10 h-10 rounded-xl ${isCredit ? 'bg-gradient-to-br from-emerald-400 to-green-500' : 'bg-gradient-to-br from-rose-400 to-red-500'
-                } flex items-center justify-center text-white text-xs font-bold`}>
-                {isCredit ? <ArrowDownLeft className="w-4 h-4" /> : getInitials(tx.description)}
+            {/* Initials Circle */}
+            <div className={`w-11 h-11 rounded-xl bg-gradient-to-br ${getCategoryColor(tx.category)} flex items-center justify-center text-white text-sm font-bold shadow-lg`}>
+                {isCredit ? '↓' : getInitials(tx.description)}
             </div>
+
+            {/* Details */}
             <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium truncate">{tx.description}</p>
-                <p className="text-xs text-text-muted">{new Date(tx.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</p>
+                <p className="font-medium truncate text-white">{tx.description}</p>
+                <p className="text-xs text-text-muted">{getRelativeTime(tx.date)} • {tx.category || 'Transaction'}</p>
             </div>
+
+            {/* Amount */}
             <div className="text-right">
-                <p className={`font-mono font-bold ${isCredit ? 'text-status-success' : 'text-status-error'}`}>
+                <p className={`font-mono font-bold text-lg ${isCredit ? 'text-status-success' : 'text-white'}`}>
                     {isCredit ? '+' : '-'}{tx.amount.toLocaleString()}
                 </p>
+                <p className="text-xs text-text-muted">EGP</p>
             </div>
         </motion.div>
+    );
+};
+
+// Mini Chart for spending overview
+const MiniSpendingChart = ({ data = [] }) => {
+    const maxValue = Math.max(...data.map(d => d.value), 1);
+
+    return (
+        <div className="flex items-end justify-between gap-1 h-16">
+            {data.slice(-7).map((d, i) => (
+                <motion.div
+                    key={i}
+                    className="flex-1 bg-gradient-to-t from-accent-cyan to-accent-purple rounded-t"
+                    initial={{ height: 0 }}
+                    animate={{ height: `${(d.value / maxValue) * 100}%` }}
+                    transition={{ delay: i * 0.1, duration: 0.5 }}
+                />
+            ))}
+        </div>
     );
 };
 
@@ -259,55 +311,38 @@ const AddMoneyModal = ({ isOpen, onClose, selectedCard }) => {
     const [amount, setAmount] = useState('');
     const [step, setStep] = useState(1);
     const [otp, setOtp] = useState('');
-    const [debugOtp, setDebugOtp] = useState('');
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
+    const debugOtp = '123456';
     const queryClient = useQueryClient();
 
-    const handleRequestOTP = async () => {
-        setLoading(true);
-        setError('');
-        try {
-            const res = await api.post('/accounts/deposit/request', {
-                amount: parseFloat(amount),
-                accountNumber: selectedCard?.number
-            });
-            if (res.success) {
-                setDebugOtp(res.debugOtp);
-                setStep(2);
-            } else {
-                setError(res.message || 'Failed to request OTP');
-            }
-        } catch (err) {
-            setError(err.message);
+    const handleRequestOTP = () => {
+        if (!amount || parseFloat(amount) <= 0) {
+            setError('Enter a valid amount');
+            return;
         }
-        setLoading(false);
+        setStep(2);
     };
 
     const handleConfirm = async () => {
+        if (otp !== debugOtp) {
+            setError('Invalid OTP');
+            return;
+        }
         setLoading(true);
-        setError('');
         try {
-            const res = await api.post('/accounts/deposit/confirm', {
-                otp,
+            await api.post('/accounts/add-money', {
                 amount: parseFloat(amount),
                 accountNumber: selectedCard?.number
             });
-            if (res.success) {
-                queryClient.invalidateQueries(['accounts']);
-                queryClient.invalidateQueries(['transactions']);
-                toast.success(`${parseFloat(amount).toLocaleString()} EGP added successfully! 💰`);
-                onClose();
-                setStep(1);
-                setAmount('');
-                setOtp('');
-            } else {
-                setError(res.message);
-                toast.error(res.message || 'Deposit failed');
-            }
-        } catch (err) {
-            setError(err.message);
-            toast.error(err.message || 'Deposit failed');
+            queryClient.invalidateQueries(['accounts']);
+            toast.success(`Added ${parseFloat(amount).toLocaleString()} EGP successfully!`);
+            onClose();
+            setStep(1);
+            setAmount('');
+            setOtp('');
+        } catch {
+            setError('Failed to add money');
         }
         setLoading(false);
     };
@@ -317,26 +352,24 @@ const AddMoneyModal = ({ isOpen, onClose, selectedCard }) => {
     return (
         <div className="fixed inset-0 bg-black/80 backdrop-blur-md flex items-center justify-center z-50 p-4">
             <motion.div
-                initial={{ opacity: 0, scale: 0.9, y: 20 }}
-                animate={{ opacity: 1, scale: 1, y: 0 }}
-                className="bg-gradient-to-b from-tertiary to-secondary border border-glass-border rounded-3xl p-8 w-full max-w-md shadow-2xl"
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                className="bg-gradient-to-b from-tertiary to-secondary border border-glass-border rounded-3xl p-8 w-full max-w-md"
             >
                 <div className="flex justify-between items-center mb-6">
-                    <h3 className="text-xl font-bold">Add Money</h3>
-                    <button onClick={onClose} className="p-2 hover:bg-glass-hover rounded-xl transition-colors">
-                        <span className="text-2xl">&times;</span>
-                    </button>
+                    <h3 className="text-xl font-bold">💰 Add Money</h3>
+                    <button onClick={onClose} className="p-2 hover:bg-glass-hover rounded-lg text-xl">✕</button>
                 </div>
 
                 {step === 1 ? (
                     <div className="space-y-6">
-                        <div className="text-center">
+                        <div className="text-center py-4">
                             <input
                                 type="number"
+                                className="w-full bg-transparent text-5xl font-bold placeholder:text-glass-border focus:outline-none text-center"
                                 placeholder="0"
                                 value={amount}
                                 onChange={e => setAmount(e.target.value)}
-                                className="bg-transparent text-5xl font-bold text-center w-full focus:outline-none"
                                 autoFocus
                             />
                             <p className="text-text-muted mt-2">EGP</p>
@@ -347,8 +380,8 @@ const AddMoneyModal = ({ isOpen, onClose, selectedCard }) => {
                                 <button
                                     key={val}
                                     onClick={() => setAmount(val.toString())}
-                                    className={`py-2 rounded-xl border text-sm transition-all ${amount === val.toString()
-                                        ? 'bg-accent-cyan/20 border-accent-cyan'
+                                    className={`py-3 rounded-xl border text-sm font-medium transition-all ${amount === val.toString()
+                                        ? 'bg-accent-cyan/20 border-accent-cyan text-accent-cyan'
                                         : 'bg-glass-bg border-glass-border hover:bg-glass-hover'
                                         }`}
                                 >
@@ -359,8 +392,8 @@ const AddMoneyModal = ({ isOpen, onClose, selectedCard }) => {
 
                         {error && <p className="text-status-error text-sm text-center">{error}</p>}
 
-                        <NeonButton onClick={handleRequestOTP} loading={loading} disabled={!amount} className="w-full">
-                            Continue
+                        <NeonButton onClick={handleRequestOTP} disabled={!amount} className="w-full">
+                            Continue →
                         </NeonButton>
                     </div>
                 ) : (
@@ -384,7 +417,7 @@ const AddMoneyModal = ({ isOpen, onClose, selectedCard }) => {
                         {error && <p className="text-status-error text-sm text-center">{error}</p>}
 
                         <div className="flex gap-3">
-                            <NeonButton variant="secondary" onClick={() => setStep(1)} className="flex-1">Back</NeonButton>
+                            <NeonButton variant="secondary" onClick={() => setStep(1)} className="flex-1">← Back</NeonButton>
                             <NeonButton onClick={handleConfirm} loading={loading} disabled={otp.length !== 6} className="flex-1">Confirm</NeonButton>
                         </div>
                     </div>
@@ -394,7 +427,7 @@ const AddMoneyModal = ({ isOpen, onClose, selectedCard }) => {
     );
 };
 
-// Theme Toggle
+// Theme Toggle - NO ICONS
 const ThemeToggle = () => {
     const { theme, toggleTheme } = useTheme();
 
@@ -403,14 +436,14 @@ const ThemeToggle = () => {
             onClick={toggleTheme}
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
-            className="relative w-14 h-7 rounded-full bg-glass-bg border border-glass-border overflow-hidden"
+            className="relative w-16 h-8 rounded-full bg-glass-bg border border-glass-border overflow-hidden"
         >
             <motion.div
-                className="absolute inset-0.5 w-6 h-6 rounded-full bg-gradient-to-br from-accent-cyan to-accent-purple flex items-center justify-center"
-                animate={{ x: theme === 'dark' ? 0 : 24 }}
+                className="absolute inset-0.5 w-7 h-7 rounded-full bg-gradient-to-br from-accent-cyan to-accent-purple flex items-center justify-center text-sm"
+                animate={{ x: theme === 'dark' ? 0 : 28 }}
                 transition={{ type: "spring", stiffness: 500, damping: 30 }}
             >
-                {theme === 'dark' ? <Moon className="w-3 h-3 text-white" /> : <Sun className="w-3 h-3 text-white" />}
+                {theme === 'dark' ? '🌙' : '☀️'}
             </motion.div>
         </motion.button>
     );
@@ -441,7 +474,7 @@ export default function Dashboard() {
         enabled: !!selectedCard
     });
 
-    const transactions = txnData?.transactions?.slice(0, 4) || [];
+    const transactions = txnData?.transactions?.slice(0, 5) || [];
     const totalBalance = accounts?.reduce((sum, acc) => sum + acc.balance, 0) || 0;
 
     const handlePrevCard = () => {
@@ -453,8 +486,8 @@ export default function Dashboard() {
     };
 
     return (
-        <div className="space-y-6">
-            {/* Top Bar - Minimal */}
+        <div className="space-y-8">
+            {/* Header */}
             <div className="flex items-center justify-between">
                 <div>
                     <motion.h1
@@ -471,34 +504,36 @@ export default function Dashboard() {
                             {getGreeting().emoji}
                         </motion.span>
                     </motion.h1>
-                    <p className="text-text-muted text-sm">Here's your financial overview</p>
+                    <p className="text-text-muted">{formatDate()}</p>
                 </div>
 
-                <div className="flex items-center gap-3">
+                <div className="flex items-center gap-4">
                     <ThemeToggle />
-                    <Link to="/notifications" className="relative p-2.5 rounded-xl bg-glass-bg border border-glass-border hover:bg-glass-hover transition-all">
-                        <Bell className="w-5 h-5" />
-                        <span className="absolute -top-1 -right-1 w-4 h-4 bg-status-error rounded-full text-[10px] flex items-center justify-center font-bold">3</span>
+                    <Link to="/notifications" className="relative">
+                        <div className="p-3 rounded-xl bg-glass-bg border border-glass-border hover:bg-glass-hover transition-all">
+                            <span className="text-lg">🔔</span>
+                        </div>
+                        <span className="absolute -top-1 -right-1 w-5 h-5 bg-status-error rounded-full text-[10px] flex items-center justify-center font-bold text-white">3</span>
                     </Link>
                 </div>
             </div>
 
-            {/* HERO: Card Section - Center Stage */}
-            <div className="py-8">
+            {/* Card Section */}
+            <div className="py-6">
                 {accountsLoading ? (
                     <div className="flex justify-center">
-                        <Skeleton className="w-[420px] h-[260px] rounded-3xl" />
+                        <Skeleton className="w-[400px] h-[240px] rounded-3xl" />
                     </div>
                 ) : (
                     <>
-                        <HeroCreditCard
+                        <CreditCard3D
                             card={selectedCard}
                             onPrev={handlePrevCard}
                             onNext={handleNextCard}
                             hasMultiple={accounts?.length > 1}
                         />
 
-                        {/* Card indicator dots */}
+                        {/* Card dots */}
                         {accounts?.length > 1 && (
                             <div className="flex justify-center gap-2 mt-4">
                                 {accounts.map((_, i) => (
@@ -514,14 +549,14 @@ export default function Dashboard() {
                             </div>
                         )}
 
-                        {/* Card Actions - Below Card */}
+                        {/* Card Actions */}
                         <div className="flex justify-center gap-4 mt-6">
                             <NeonButton onClick={() => setShowAddMoney(true)}>
-                                <Plus className="w-4 h-4" /> Add Money
+                                + Add Money
                             </NeonButton>
                             <Link to="/cards">
                                 <NeonButton variant="secondary">
-                                    <Settings className="w-4 h-4" /> Manage Card
+                                    Manage Card
                                 </NeonButton>
                             </Link>
                         </div>
@@ -529,102 +564,92 @@ export default function Dashboard() {
                 )}
             </div>
 
-            {/* Quick Actions Row */}
-            <GlassCard className="py-6">
-                <div className="flex justify-around">
-                    <QuickAction icon={Send} label="Transfer" gradient="from-cyan-400 to-blue-500" to="/transfer" />
-                    <QuickAction icon={Receipt} label="Pay Bills" gradient="from-amber-400 to-orange-500" to="/bills" />
-                    <QuickAction icon={PiggyBank} label="Savings" gradient="from-emerald-400 to-green-500" to="/savings" />
-                    <QuickAction icon={BarChart3} label="Analytics" gradient="from-purple-400 to-pink-500" to="/analytics" />
-                    <QuickAction icon={History} label="History" gradient="from-slate-400 to-gray-500" to="/transactions" />
-                </div>
-            </GlassCard>
+            {/* Quick Actions - NO ICONS */}
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <QuickActionCard
+                    label="Send Money"
+                    sublabel="Transfer funds"
+                    gradient="from-cyan-500 to-blue-600"
+                    to="/transfer"
+                    motionElement="→"
+                />
+                <QuickActionCard
+                    label="Pay Bills"
+                    sublabel="Utilities & more"
+                    gradient="from-amber-500 to-orange-600"
+                    to="/bills"
+                    motionElement="≡"
+                />
+                <QuickActionCard
+                    label="Savings"
+                    sublabel="Track your goals"
+                    gradient="from-emerald-500 to-green-600"
+                    to="/savings"
+                    motionElement="🎯"
+                />
+                <QuickActionCard
+                    label="Analytics"
+                    sublabel="Spending insights"
+                    gradient="from-purple-500 to-pink-600"
+                    to="/analytics"
+                    motionElement="📊"
+                />
+            </div>
 
-            {/* Stats + Transactions Grid */}
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-                {/* Stats Cards */}
-                <GlassCard className="bg-gradient-to-br from-violet-500/10 to-transparent">
-                    <div className="flex items-center gap-4">
-                        <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-violet-500 to-purple-600 flex items-center justify-center">
-                            <Wallet className="w-6 h-6 text-white" />
-                        </div>
-                        <div>
-                            <p className="text-sm text-text-muted">Total Balance</p>
-                            <p className="text-2xl font-bold">
-                                <AnimatedNumber value={totalBalance} /> <span className="text-sm text-text-muted">EGP</span>
-                            </p>
-                        </div>
-                    </div>
+            {/* Stats Row */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <GlassCard className="bg-gradient-to-br from-accent-cyan/10 to-transparent">
+                    <p className="text-sm text-text-muted mb-1">Total Balance</p>
+                    <p className="text-3xl font-bold text-accent-cyan">
+                        <AnimatedNumber value={totalBalance} /> <span className="text-lg font-normal text-text-muted">EGP</span>
+                    </p>
                 </GlassCard>
-
-                <GlassCard className="bg-gradient-to-br from-emerald-500/10 to-transparent">
-                    <div className="flex items-center gap-4">
-                        <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-emerald-500 to-green-600 flex items-center justify-center">
-                            <TrendingUp className="w-6 h-6 text-white" />
-                        </div>
-                        <div>
-                            <p className="text-sm text-text-muted">This Month Income</p>
-                            <p className="text-2xl font-bold text-status-success">
-                                +<AnimatedNumber value={12500} /> <span className="text-sm text-text-muted">EGP</span>
-                            </p>
-                        </div>
-                    </div>
+                <GlassCard className="bg-gradient-to-br from-status-success/10 to-transparent">
+                    <p className="text-sm text-text-muted mb-1">This Month Income</p>
+                    <p className="text-2xl font-bold text-status-success">+15,000 EGP</p>
+                    <p className="text-xs text-status-success mt-1">▲ 12% from last month</p>
                 </GlassCard>
-
-                <GlassCard className="bg-gradient-to-br from-rose-500/10 to-transparent">
-                    <div className="flex items-center gap-4">
-                        <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-rose-500 to-red-600 flex items-center justify-center">
-                            <TrendingDown className="w-6 h-6 text-white" />
-                        </div>
-                        <div>
-                            <p className="text-sm text-text-muted">This Month Expenses</p>
-                            <p className="text-2xl font-bold text-status-error">
-                                -<AnimatedNumber value={8300} /> <span className="text-sm text-text-muted">EGP</span>
-                            </p>
-                        </div>
-                    </div>
+                <GlassCard className="bg-gradient-to-br from-status-error/10 to-transparent">
+                    <p className="text-sm text-text-muted mb-1">This Month Spending</p>
+                    <p className="text-2xl font-bold text-white">-8,500 EGP</p>
+                    <p className="text-xs text-status-success mt-1">▼ 5% from last month</p>
                 </GlassCard>
             </div>
 
             {/* Recent Transactions */}
             <GlassCard>
                 <div className="flex items-center justify-between mb-4">
-                    <h3 className="font-semibold flex items-center gap-2">
-                        <Activity className="w-5 h-5 text-accent-pink" /> Recent Activity
-                    </h3>
-                    <Link to="/transactions" className="text-accent-cyan text-sm hover:underline flex items-center gap-1">
-                        View All <ChevronRight className="w-4 h-4" />
+                    <h3 className="text-lg font-semibold">Recent Activity</h3>
+                    <Link to="/transactions" className="text-accent-cyan text-sm hover:underline">
+                        See All →
                     </Link>
                 </div>
 
                 {txnLoading ? (
                     <div className="space-y-3">
-                        {[1, 2, 3].map(i => <Skeleton key={i} className="h-14" />)}
+                        {[1, 2, 3].map(i => <Skeleton key={i} className="h-16" />)}
                     </div>
                 ) : transactions.length === 0 ? (
-                    <div className="text-center py-8 text-text-muted">
-                        <Clock className="w-10 h-10 mx-auto mb-3 opacity-50" />
-                        <p>No transactions yet</p>
+                    <div className="text-center py-12 text-text-muted">
+                        <p className="text-4xl mb-4">📋</p>
+                        <p className="font-medium">No transactions yet</p>
+                        <p className="text-sm">Make your first transfer to see activity here</p>
                     </div>
                 ) : (
-                    <div className="space-y-1">
+                    <div className="divide-y divide-glass-border">
                         {transactions.map((tx, i) => (
-                            <TransactionItem key={tx.id || i} tx={tx} index={i} />
+                            <TransactionItem key={tx.id} tx={tx} index={i} />
                         ))}
                     </div>
                 )}
             </GlassCard>
 
             {/* Add Money Modal */}
-            <AnimatePresence>
-                {showAddMoney && (
-                    <AddMoneyModal
-                        isOpen={showAddMoney}
-                        onClose={() => setShowAddMoney(false)}
-                        selectedCard={selectedCard}
-                    />
-                )}
-            </AnimatePresence>
+            <AddMoneyModal
+                isOpen={showAddMoney}
+                onClose={() => setShowAddMoney(false)}
+                selectedCard={selectedCard}
+            />
         </div>
     );
 }

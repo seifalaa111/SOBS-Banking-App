@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { CreditCard, Lock, Unlock, Shield, Eye, EyeOff, Globe, ShoppingCart, Smartphone, X, Check, AlertTriangle, ChevronLeft, ChevronRight, Snowflake, Wifi } from 'lucide-react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import GlassCard from '../../components/common/GlassCard';
 import NeonButton from '../../components/common/NeonButton';
@@ -8,20 +7,24 @@ import GlowInput from '../../components/common/GlowInput';
 import Skeleton from '../../components/common/Skeleton';
 import api from '../../api';
 
-const ToggleSwitch = ({ enabled, onChange, disabled }) => (
+// Toggle Switch with ON/OFF text - NO ICONS
+const ToggleSwitch = ({ enabled, onChange, disabled, label }) => (
     <button
         onClick={onChange}
         disabled={disabled}
-        className={`relative w-14 h-7 rounded-full transition-all ${disabled ? 'opacity-50 cursor-not-allowed' : ''} ${enabled ? 'bg-gradient-to-r from-accent-cyan to-accent-purple' : 'bg-glass-border'}`}
+        className={`relative w-16 h-8 rounded-full transition-all ${disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'} ${enabled ? 'bg-gradient-to-r from-accent-cyan to-accent-purple' : 'bg-glass-border'}`}
     >
         <motion.div
-            className="absolute top-1 left-1 w-5 h-5 rounded-full bg-white shadow-lg"
-            animate={{ x: enabled ? 24 : 0 }}
+            className="absolute top-1 left-1 w-6 h-6 rounded-full bg-white shadow-lg flex items-center justify-center text-[10px] font-bold"
+            animate={{ x: enabled ? 28 : 0 }}
             transition={{ type: "spring", stiffness: 500, damping: 30 }}
-        />
+        >
+            {enabled ? '✓' : ''}
+        </motion.div>
     </button>
 );
 
+// View PIN Modal - NO ICONS
 const ViewPINModal = ({ isOpen, onClose, cardNumber }) => {
     const [otp, setOtp] = useState('');
     const [verified, setVerified] = useState(false);
@@ -52,10 +55,8 @@ const ViewPINModal = ({ isOpen, onClose, cardNumber }) => {
                 className="bg-gradient-to-b from-tertiary to-secondary border border-glass-border rounded-3xl p-8 w-full max-w-md"
             >
                 <div className="flex justify-between items-center mb-6">
-                    <h3 className="text-xl font-bold flex items-center gap-2">
-                        <Shield className="w-5 h-5 text-accent-cyan" /> View Card PIN
-                    </h3>
-                    <button onClick={handleClose} className="p-2 hover:bg-glass-hover rounded-lg"><X className="w-5 h-5" /></button>
+                    <h3 className="text-xl font-bold">🔐 View Card PIN</h3>
+                    <button onClick={handleClose} className="p-2 hover:bg-glass-hover rounded-lg text-xl">✕</button>
                 </div>
 
                 {verified ? (
@@ -63,25 +64,24 @@ const ViewPINModal = ({ isOpen, onClose, cardNumber }) => {
                         <motion.div
                             initial={{ scale: 0 }}
                             animate={{ scale: 1 }}
-                            className="w-20 h-20 bg-status-success/20 rounded-full flex items-center justify-center mx-auto mb-6"
+                            className="w-20 h-20 bg-status-success/20 rounded-full flex items-center justify-center mx-auto mb-6 text-4xl"
                         >
-                            <Check className="w-10 h-10 text-status-success" />
+                            ✓
                         </motion.div>
                         <p className="text-text-muted mb-2">Your PIN is:</p>
                         <div className="text-5xl font-mono font-bold tracking-widest bg-clip-text text-transparent bg-gradient-to-r from-accent-cyan to-accent-purple mb-6">
                             {pin}
                         </div>
-                        <p className="text-sm text-status-warning mb-6 flex items-center justify-center gap-2">
-                            <AlertTriangle className="w-4 h-4" />
-                            Never share your PIN with anyone
+                        <p className="text-sm text-status-warning mb-6">
+                            ⚠️ Never share your PIN with anyone
                         </p>
                         <NeonButton onClick={handleClose}>Done</NeonButton>
                     </div>
                 ) : (
                     <>
                         <div className="text-center mb-6">
-                            <div className="w-16 h-16 bg-accent-cyan/20 rounded-full flex items-center justify-center mx-auto mb-4">
-                                <Lock className="w-8 h-8 text-accent-cyan" />
+                            <div className="w-16 h-16 bg-accent-cyan/20 rounded-full flex items-center justify-center mx-auto mb-4 text-3xl">
+                                🔒
                             </div>
                             <p className="text-text-secondary">Enter OTP to view your PIN</p>
                         </div>
@@ -109,6 +109,7 @@ const ViewPINModal = ({ isOpen, onClose, cardNumber }) => {
     );
 };
 
+// Spending Limit Modal - NO ICONS
 const SpendingLimitModal = ({ isOpen, onClose, currentLimit, onSave }) => {
     const [limit, setLimit] = useState(currentLimit?.toString() || '50000');
 
@@ -122,35 +123,45 @@ const SpendingLimitModal = ({ isOpen, onClose, currentLimit, onSave }) => {
                 className="bg-gradient-to-b from-tertiary to-secondary border border-glass-border rounded-3xl p-8 w-full max-w-md"
             >
                 <div className="flex justify-between items-center mb-6">
-                    <h3 className="text-xl font-bold">Set Spending Limit</h3>
-                    <button onClick={onClose} className="p-2 hover:bg-glass-hover rounded-lg"><X className="w-5 h-5" /></button>
+                    <h3 className="text-xl font-bold">Set Daily Limit</h3>
+                    <button onClick={onClose} className="p-2 hover:bg-glass-hover rounded-lg text-xl">✕</button>
                 </div>
 
                 <p className="text-text-secondary text-sm mb-6">
                     Limit daily spending on this card to protect against fraud
                 </p>
 
-                <GlowInput
-                    label="Daily Limit (EGP)"
-                    type="number"
-                    value={limit}
-                    onChange={e => setLimit(e.target.value)}
-                />
+                {/* Slider visualization */}
+                <div className="mb-6">
+                    <input
+                        type="range"
+                        min="1000"
+                        max="100000"
+                        step="1000"
+                        value={limit}
+                        onChange={e => setLimit(e.target.value)}
+                        className="w-full h-2 bg-glass-border rounded-full appearance-none cursor-pointer [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-6 [&::-webkit-slider-thumb]:h-6 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-gradient-to-br [&::-webkit-slider-thumb]:from-accent-cyan [&::-webkit-slider-thumb]:to-accent-purple [&::-webkit-slider-thumb]:cursor-pointer"
+                    />
+                    <div className="flex justify-between text-xs text-text-muted mt-2">
+                        <span>1,000 EGP</span>
+                        <span className="text-accent-cyan font-bold text-lg">{parseInt(limit).toLocaleString()} EGP</span>
+                        <span>100,000 EGP</span>
+                    </div>
+                </div>
 
-                <div className="grid grid-cols-4 gap-2 mt-4">
+                <div className="grid grid-cols-4 gap-2 mb-6">
                     {[5000, 10000, 25000, 50000].map(val => (
                         <button
                             key={val}
                             onClick={() => setLimit(val.toString())}
-                            className={`py-2 rounded-lg border text-sm transition-all ${limit === val.toString() ? 'bg-accent-cyan/20 border-accent-cyan text-accent-cyan' : 'bg-glass-bg border-glass-border hover:bg-glass-hover'
-                                }`}
+                            className={`py-2 rounded-lg border text-sm transition-all ${limit === val.toString() ? 'bg-accent-cyan/20 border-accent-cyan text-accent-cyan' : 'bg-glass-bg border-glass-border hover:bg-glass-hover'}`}
                         >
                             {(val / 1000)}K
                         </button>
                     ))}
                 </div>
 
-                <NeonButton onClick={() => { onSave(parseFloat(limit)); onClose(); }} className="w-full mt-6">
+                <NeonButton onClick={() => { onSave(parseFloat(limit)); onClose(); }} className="w-full">
                     Save Limit
                 </NeonButton>
             </motion.div>
@@ -158,7 +169,7 @@ const SpendingLimitModal = ({ isOpen, onClose, currentLimit, onSave }) => {
     );
 };
 
-// Premium 3D Card Component
+// Credit Card Visual - NO ICONS
 const CreditCardVisual = ({ card, isFrozen, isSelected, onClick }) => {
     return (
         <motion.div
@@ -168,7 +179,7 @@ const CreditCardVisual = ({ card, isFrozen, isSelected, onClick }) => {
             className={`relative cursor-pointer transition-all ${isSelected ? 'z-20' : 'z-10 opacity-70 hover:opacity-100'}`}
             style={{ perspective: '1000px' }}
         >
-            <div className={`relative w-80 aspect-[1.6/1] rounded-2xl overflow-hidden shadow-2xl ${isSelected ? 'shadow-accent-cyan/30' : 'shadow-black/50'}`}>
+            <div className={`relative w-72 aspect-[1.6/1] rounded-2xl overflow-hidden shadow-2xl ${isSelected ? 'shadow-accent-cyan/30' : 'shadow-black/50'}`}>
                 {/* Card Background */}
                 <div className={`absolute inset-0 ${isFrozen
                     ? 'bg-gradient-to-br from-slate-600 via-gray-700 to-slate-800'
@@ -177,13 +188,13 @@ const CreditCardVisual = ({ card, isFrozen, isSelected, onClick }) => {
                         : 'bg-gradient-to-br from-amber-500 via-orange-600 to-red-600'
                     }`} />
 
-                {/* Glassmorphism overlay */}
+                {/* Glassmorphism */}
                 <div className="absolute inset-0 bg-white/5" />
 
-                {/* Pattern overlay */}
-                <div className="absolute inset-0 opacity-10">
-                    <div className="absolute top-0 right-0 w-64 h-64 bg-white rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
-                    <div className="absolute bottom-0 left-0 w-48 h-48 bg-white rounded-full blur-3xl translate-y-1/2 -translate-x-1/2" />
+                {/* Decorative circles */}
+                <div className="absolute inset-0 opacity-20">
+                    <div className="absolute -top-10 -right-10 w-40 h-40 bg-white rounded-full blur-3xl" />
+                    <div className="absolute -bottom-10 -left-10 w-32 h-32 bg-white rounded-full blur-3xl" />
                 </div>
 
                 {/* Frozen overlay */}
@@ -194,35 +205,41 @@ const CreditCardVisual = ({ card, isFrozen, isSelected, onClick }) => {
                         className="absolute inset-0 bg-blue-900/50 backdrop-blur-sm flex items-center justify-center"
                     >
                         <div className="text-center">
-                            <Snowflake className="w-12 h-12 mx-auto mb-2 text-blue-300 animate-pulse" />
+                            <motion.span
+                                className="text-4xl block mb-2"
+                                animate={{ scale: [1, 1.1, 1] }}
+                                transition={{ duration: 2, repeat: Infinity }}
+                            >
+                                ❄️
+                            </motion.span>
                             <span className="text-blue-200 font-bold tracking-widest text-sm">FROZEN</span>
                         </div>
                     </motion.div>
                 )}
 
                 {/* Card content */}
-                <div className="relative z-10 p-6 h-full flex flex-col justify-between">
+                <div className="relative z-10 p-5 h-full flex flex-col justify-between">
                     <div className="flex justify-between items-start">
                         <div className="flex items-center gap-2">
-                            <div className="w-10 h-8 bg-gradient-to-br from-yellow-300 to-yellow-500 rounded-md shadow-inner" />
-                            <Wifi className="w-6 h-6 text-white/70 rotate-90" />
+                            {/* EMV Chip */}
+                            <div className="w-10 h-7 bg-gradient-to-br from-yellow-300 to-yellow-500 rounded-md" />
+                            {/* Contactless */}
+                            <span className="text-white/70 text-sm">)))</span>
                         </div>
-                        <div className="text-right">
-                            <span className="text-xl font-bold italic text-white/90 tracking-wide">VISA</span>
-                        </div>
+                        <span className="text-xl font-bold italic text-white/90 tracking-wide">VISA</span>
                     </div>
 
                     <div className="space-y-2">
-                        <div className="font-mono text-xl tracking-[0.3em] text-white/90">
+                        <div className="font-mono text-lg tracking-[0.25em] text-white/90">
                             •••• •••• •••• {card.number.slice(-4)}
                         </div>
                         <div className="flex justify-between items-end">
                             <div>
-                                <p className="text-xs text-white/50 uppercase">Card Name</p>
+                                <p className="text-[10px] text-white/50 uppercase">Card Name</p>
                                 <p className="text-sm font-medium text-white/90">{card.cardName}</p>
                             </div>
                             <div className="text-right">
-                                <p className="text-xs text-white/50 uppercase">Balance</p>
+                                <p className="text-[10px] text-white/50 uppercase">Balance</p>
                                 <p className="text-lg font-bold text-white">{card.balance.toLocaleString()} {card.currency}</p>
                             </div>
                         </div>
@@ -240,6 +257,22 @@ const CreditCardVisual = ({ card, isFrozen, isSelected, onClick }) => {
         </motion.div>
     );
 };
+
+// Setting Row - NO ICONS, text only
+const SettingRow = ({ title, subtitle, enabled, onChange, disabled }) => (
+    <div className={`flex items-center justify-between p-4 ${disabled ? 'opacity-50' : ''}`}>
+        <div>
+            <p className="font-medium">{title}</p>
+            <p className="text-sm text-text-muted">{subtitle}</p>
+        </div>
+        <div className="flex items-center gap-3">
+            <span className={`text-xs font-bold ${enabled && !disabled ? 'text-accent-cyan' : 'text-text-muted'}`}>
+                {enabled && !disabled ? 'ON' : 'OFF'}
+            </span>
+            <ToggleSwitch enabled={enabled && !disabled} onChange={onChange} disabled={disabled} />
+        </div>
+    </div>
+);
 
 export default function CardControls() {
     const [showPINModal, setShowPINModal] = useState(false);
@@ -287,15 +320,8 @@ export default function CardControls() {
                 </div>
 
                 <div className="relative z-10">
-                    <div className="flex items-center gap-3 mb-2">
-                        <div className="p-3 bg-gradient-to-br from-amber-400 to-orange-500 rounded-2xl shadow-lg shadow-orange-500/30">
-                            <CreditCard className="w-8 h-8 text-white" />
-                        </div>
-                        <div>
-                            <h1 className="text-3xl font-bold">Card Controls</h1>
-                            <p className="text-text-secondary">Manage your card security settings</p>
-                        </div>
-                    </div>
+                    <h1 className="text-3xl font-bold mb-2">My Cards</h1>
+                    <p className="text-text-secondary">Manage your card security and settings</p>
                 </div>
             </div>
 
@@ -303,7 +329,7 @@ export default function CardControls() {
                 <Skeleton className="h-96" />
             ) : !cards || cards.length === 0 ? (
                 <GlassCard className="text-center py-16">
-                    <CreditCard className="w-16 h-16 mx-auto mb-4 text-text-muted opacity-50" />
+                    <span className="text-6xl block mb-4">💳</span>
                     <h3 className="text-xl font-semibold mb-2">No cards found</h3>
                     <p className="text-text-muted">Add a card to manage its settings</p>
                 </GlassCard>
@@ -316,9 +342,9 @@ export default function CardControls() {
                             {cards.length > 1 && (
                                 <button
                                     onClick={() => setSelectedCardIndex(i => (i - 1 + cards.length) % cards.length)}
-                                    className="p-3 rounded-full bg-glass-bg border border-glass-border hover:bg-glass-hover hover:border-accent-cyan transition-all"
+                                    className="p-3 rounded-full bg-glass-bg border border-glass-border hover:bg-glass-hover hover:border-accent-cyan transition-all text-2xl"
                                 >
-                                    <ChevronLeft className="w-6 h-6" />
+                                    ←
                                 </button>
                             )}
 
@@ -354,23 +380,23 @@ export default function CardControls() {
                             {cards.length > 1 && (
                                 <button
                                     onClick={() => setSelectedCardIndex(i => (i + 1) % cards.length)}
-                                    className="p-3 rounded-full bg-glass-bg border border-glass-border hover:bg-glass-hover hover:border-accent-cyan transition-all"
+                                    className="p-3 rounded-full bg-glass-bg border border-glass-border hover:bg-glass-hover hover:border-accent-cyan transition-all text-2xl"
                                 >
-                                    <ChevronRight className="w-6 h-6" />
+                                    →
                                 </button>
                             )}
                         </div>
 
-                        {/* Card Indicators */}
+                        {/* Card dots */}
                         {cards.length > 1 && (
                             <div className="flex justify-center gap-2 mt-6">
                                 {cards.map((_, i) => (
                                     <button
                                         key={i}
                                         onClick={() => setSelectedCardIndex(i)}
-                                        className={`w-2.5 h-2.5 rounded-full transition-all ${i === selectedCardIndex
-                                                ? 'bg-accent-cyan w-8'
-                                                : 'bg-glass-border hover:bg-glass-hover'
+                                        className={`transition-all ${i === selectedCardIndex
+                                            ? 'w-8 h-2 bg-accent-cyan rounded-full'
+                                            : 'w-2 h-2 bg-glass-border rounded-full hover:bg-glass-hover'
                                             }`}
                                     />
                                 ))}
@@ -386,12 +412,12 @@ export default function CardControls() {
                             animate={{ opacity: 1, y: 0 }}
                             className="space-y-4"
                         >
-                            {/* Freeze Card - Main Action */}
+                            {/* Freeze Card */}
                             <GlassCard className={`${isFrozen ? 'bg-gradient-to-br from-blue-500/20 to-status-error/10 border-blue-500/50' : 'bg-gradient-to-br from-status-success/10 to-transparent border-status-success/30'}`}>
                                 <div className="flex items-center justify-between">
                                     <div className="flex items-center gap-4">
-                                        <div className={`w-14 h-14 rounded-2xl ${isFrozen ? 'bg-blue-500/20' : 'bg-status-success/20'} flex items-center justify-center`}>
-                                            {isFrozen ? <Snowflake className="w-7 h-7 text-blue-400" /> : <Unlock className="w-7 h-7 text-status-success" />}
+                                        <div className={`w-14 h-14 rounded-2xl ${isFrozen ? 'bg-blue-500/20' : 'bg-status-success/20'} flex items-center justify-center text-3xl`}>
+                                            {isFrozen ? '❄️' : '✓'}
                                         </div>
                                         <div>
                                             <p className="text-lg font-semibold">{isFrozen ? 'Card Frozen' : 'Card Active'}</p>
@@ -406,7 +432,7 @@ export default function CardControls() {
                                         variant={isFrozen ? 'primary' : 'danger'}
                                         onClick={() => toggleSetting('isFrozen')}
                                     >
-                                        {isFrozen ? <><Unlock className="w-4 h-4" /> Unfreeze</> : <><Snowflake className="w-4 h-4" /> Freeze</>}
+                                        {isFrozen ? 'Unfreeze' : 'Freeze'}
                                     </NeonButton>
                                 </div>
 
@@ -416,113 +442,69 @@ export default function CardControls() {
                                         animate={{ opacity: 1, height: 'auto' }}
                                         className="mt-4 p-4 rounded-xl bg-status-warning/10 border border-status-warning/30"
                                     >
-                                        <p className="text-sm text-status-warning flex items-center gap-2">
-                                            <AlertTriangle className="w-4 h-4" />
-                                            <strong>Blocked:</strong> Transfers, bill payments, deposits, and all card transactions
+                                        <p className="text-sm text-status-warning">
+                                            ⚠️ <strong>Blocked:</strong> Transfers, bill payments, deposits, and all card transactions
                                         </p>
                                     </motion.div>
                                 )}
                             </GlassCard>
 
-                            {/* Other Settings */}
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                {/* Online Purchases */}
-                                <GlassCard className={`hover:border-accent-cyan/30 transition-all ${isFrozen ? 'opacity-50' : ''}`}>
-                                    <div className="flex items-center justify-between">
-                                        <div className="flex items-center gap-3">
-                                            <div className="w-12 h-12 rounded-xl bg-accent-cyan/20 flex items-center justify-center">
-                                                <Globe className="w-6 h-6 text-accent-cyan" />
-                                            </div>
-                                            <div>
-                                                <p className="font-medium">Online Purchases</p>
-                                                <p className="text-sm text-text-muted">E-commerce transactions</p>
-                                            </div>
-                                        </div>
-                                        <ToggleSwitch
-                                            enabled={cardSettings.onlinePurchases && !isFrozen}
-                                            onChange={() => toggleSetting('onlinePurchases')}
-                                            disabled={isFrozen}
-                                        />
-                                    </div>
-                                </GlassCard>
-
-                                {/* International */}
-                                <GlassCard className={`hover:border-accent-cyan/30 transition-all ${isFrozen ? 'opacity-50' : ''}`}>
-                                    <div className="flex items-center justify-between">
-                                        <div className="flex items-center gap-3">
-                                            <div className="w-12 h-12 rounded-xl bg-accent-purple/20 flex items-center justify-center">
-                                                <ShoppingCart className="w-6 h-6 text-accent-purple" />
-                                            </div>
-                                            <div>
-                                                <p className="font-medium">International</p>
-                                                <p className="text-sm text-text-muted">Payments from abroad</p>
-                                            </div>
-                                        </div>
-                                        <ToggleSwitch
-                                            enabled={cardSettings.internationalTransactions && !isFrozen}
-                                            onChange={() => toggleSetting('internationalTransactions')}
-                                            disabled={isFrozen}
-                                        />
-                                    </div>
-                                </GlassCard>
-
-                                {/* Contactless */}
-                                <GlassCard className={`hover:border-accent-cyan/30 transition-all ${isFrozen ? 'opacity-50' : ''}`}>
-                                    <div className="flex items-center justify-between">
-                                        <div className="flex items-center gap-3">
-                                            <div className="w-12 h-12 rounded-xl bg-accent-pink/20 flex items-center justify-center">
-                                                <Smartphone className="w-6 h-6 text-accent-pink" />
-                                            </div>
-                                            <div>
-                                                <p className="font-medium">Contactless</p>
-                                                <p className="text-sm text-text-muted">Tap to pay enabled</p>
-                                            </div>
-                                        </div>
-                                        <ToggleSwitch
-                                            enabled={cardSettings.contactlessPayments && !isFrozen}
-                                            onChange={() => toggleSetting('contactlessPayments')}
-                                            disabled={isFrozen}
-                                        />
-                                    </div>
-                                </GlassCard>
-
-                                {/* Spending Limit */}
-                                <GlassCard className={`hover:border-accent-cyan/30 transition-all ${isFrozen ? 'opacity-50' : ''}`}>
-                                    <div className="flex items-center justify-between">
-                                        <div className="flex items-center gap-3">
-                                            <div className="w-12 h-12 rounded-xl bg-status-warning/20 flex items-center justify-center">
-                                                <Shield className="w-6 h-6 text-status-warning" />
-                                            </div>
-                                            <div>
-                                                <p className="font-medium">Daily Limit</p>
-                                                <p className="text-sm text-accent-cyan font-mono">{(cardSettings.spendingLimit || 50000).toLocaleString()} EGP</p>
-                                            </div>
-                                        </div>
-                                        <NeonButton
-                                            variant="secondary"
-                                            onClick={() => setShowLimitModal(true)}
-                                            disabled={isFrozen}
-                                        >
-                                            Change
-                                        </NeonButton>
-                                    </div>
-                                </GlassCard>
-                            </div>
-
-                            {/* View PIN Button */}
+                            {/* Settings Grid */}
                             <GlassCard>
-                                <div className="flex items-center justify-between">
-                                    <div className="flex items-center gap-3">
-                                        <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-accent-cyan to-accent-purple flex items-center justify-center">
-                                            <Lock className="w-6 h-6 text-white" />
-                                        </div>
-                                        <div>
-                                            <p className="font-medium">Card PIN</p>
-                                            <p className="text-sm text-text-muted">View your secure PIN (requires OTP)</p>
-                                        </div>
+                                <h3 className="text-lg font-semibold mb-4 px-4 pt-2">Card Settings</h3>
+                                <div className="divide-y divide-glass-border">
+                                    <SettingRow
+                                        title="Online Purchases"
+                                        subtitle="Enable payments on websites and apps"
+                                        enabled={cardSettings.onlinePurchases}
+                                        onChange={() => toggleSetting('onlinePurchases')}
+                                        disabled={isFrozen}
+                                    />
+                                    <SettingRow
+                                        title="International Payments"
+                                        subtitle="Allow payments outside Egypt"
+                                        enabled={cardSettings.internationalTransactions}
+                                        onChange={() => toggleSetting('internationalTransactions')}
+                                        disabled={isFrozen}
+                                    />
+                                    <SettingRow
+                                        title="Contactless Payments"
+                                        subtitle="Tap to pay at terminals"
+                                        enabled={cardSettings.contactlessPayments}
+                                        onChange={() => toggleSetting('contactlessPayments')}
+                                        disabled={isFrozen}
+                                    />
+                                </div>
+                            </GlassCard>
+
+                            {/* Daily Limit */}
+                            <GlassCard className={isFrozen ? 'opacity-50' : ''}>
+                                <div className="flex items-center justify-between p-2">
+                                    <div>
+                                        <p className="font-medium">Daily Spending Limit</p>
+                                        <p className="text-2xl font-bold text-accent-cyan font-mono mt-1">
+                                            {(cardSettings.spendingLimit || 50000).toLocaleString()} EGP
+                                        </p>
+                                    </div>
+                                    <NeonButton
+                                        variant="secondary"
+                                        onClick={() => setShowLimitModal(true)}
+                                        disabled={isFrozen}
+                                    >
+                                        Change
+                                    </NeonButton>
+                                </div>
+                            </GlassCard>
+
+                            {/* View PIN */}
+                            <GlassCard>
+                                <div className="flex items-center justify-between p-2">
+                                    <div>
+                                        <p className="font-medium">Card PIN</p>
+                                        <p className="text-sm text-text-muted">View your secure PIN (requires OTP)</p>
                                     </div>
                                     <NeonButton onClick={() => setShowPINModal(true)}>
-                                        <Eye className="w-4 h-4" /> View PIN
+                                        View PIN
                                     </NeonButton>
                                 </div>
                             </GlassCard>
